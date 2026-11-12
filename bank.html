@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>2−1 情報処理銀行</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cover:#12264a;--cover2:#0b1a36;--paper:#f6f8fa;--paper2:#e8eef3;--rule:#b7c9d8;
+  --ink:#14213a;--mut:#5a6b85;--gold:#d4af37;--gold2:#f6e27a;--shu:#c8322f;
+  --up:#c62839;--dn:#1f6fd1;--ok:#1b7f4b;--bad:#b3261e;
+  --mj:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',serif;
+  --gt:'Zen Kaku Gothic New','Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{min-height:100dvh;background:linear-gradient(180deg,var(--cover) 0,var(--cover2) 100%) fixed;color:var(--paper);font-family:var(--gt);line-height:1.55;-webkit-tap-highlight-color:transparent;padding-top:env(safe-area-inset-top,0px)}
+#app{max-width:720px;margin:0 auto;padding:14px 14px calc(96px + env(safe-area-inset-bottom,0px))}
+button,input,select{font:inherit}
+.cover{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.logo{font-family:var(--mj);font-weight:800;font-size:clamp(22px,6vw,30px);line-height:1.15;background:linear-gradient(#f6e27a,#d4af37 60%,#8a6a12);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hr{display:flex;align-items:center;gap:8px}.fsel{font:inherit;font-size:12px;padding:6px 8px;border-radius:8px;border:1px solid var(--gold2);background:rgba(0,0,0,.25);color:inherit;max-width:44vw}.fsel[hidden]{display:none}.fsel option{color:#222}
+.brand small{display:block;letter-spacing:.42em;color:var(--gold2);font-size:11px;margin-top:2px}
+.net{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin:18px 0 10px;flex-wrap:wrap}
+.net .lab{display:block;color:#a9b8d0;font-size:13px}
+#net{font-family:var(--mj);font-weight:800;font-size:clamp(34px,10vw,52px);line-height:1.1;font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.net-r{text-align:right;font-size:12px;color:#a9b8d0;display:flex;flex-direction:column;gap:2px}
+.net-r b{color:var(--gold2);font-family:var(--mj);letter-spacing:.08em}
+.sumrow{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:16px}
+.sumrow div{background:#ffffff12;border:1px solid #ffffff22;border-radius:10px;padding:7px 6px;text-align:center;min-width:0}
+.sumrow span{display:block;font-size:11px;color:#a9b8d0}
+.sumrow b{display:block;font-family:var(--mj);font-size:14px;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis}
+.card{background:var(--paper);color:var(--ink);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 8px 22px #0006;border-top:4px solid var(--gold)}
+.card h2,.sec{font-family:var(--mj);font-size:19px;font-weight:800;margin-bottom:8px;color:var(--ink)}
+.sec{color:var(--paper);margin:20px 0 10px}
+.card h2 small{font-family:var(--gt);font-weight:400;color:var(--mut);font-size:13px;margin-left:4px}
+.mut{color:var(--mut);font-size:13px}
+.lab{display:block;font-size:12px;color:var(--mut);margin:10px 0 4px}
+.amt{font-family:var(--mj);font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 4px;padding:10px 12px;background:var(--paper2);border-radius:10px}
+.two .lab{margin-top:0}
+input,select{width:100%;min-height:46px;padding:8px 12px;border-radius:9px;border:1.5px solid var(--rule);background:#fff;color:var(--ink)}
+input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #2a7fff;outline-offset:2px}
+input[type=range]{padding:0;min-height:34px;accent-color:var(--cover);border:0;background:none}
+.qs{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.q{min-height:38px;padding:4px 12px;border-radius:999px;border:1.5px solid var(--rule);background:#fff;color:var(--ink);cursor:pointer}
+.q:active{background:var(--paper2)}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.btn{min-height:46px;padding:8px 18px;border-radius:10px;border:2px solid var(--cover);background:var(--cover);color:#fff;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;text-align:center}
+.btn:active{transform:translateY(2px)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.alt{background:#fff;color:var(--cover)}
+.btn.sell{background:var(--dn);border-color:var(--dn)}
+.btn.buy{background:var(--up);border-color:var(--up)}
+.btn.s{min-height:38px;padding:4px 14px;font-size:14px}
+.btn.gold{background:linear-gradient(#f6e27a,#c99a1c);border-color:var(--gold2);color:#2a1c00}
+.btn.one{grid-column:1/-1}
+/* 通帳 */
+.book{border:1.5px solid var(--rule);border-radius:8px;overflow:hidden;font-size:12.5px;background:repeating-linear-gradient(#fff 0 32px,#f0f5f9 32px 64px)}
+.bk-h,.bk-r{display:grid;grid-template-columns:3.6em 1fr 4.6em 4.6em 5.4em;gap:6px;padding:6px 8px;align-items:center;border-bottom:1px solid var(--rule)}
+.bk-h{background:var(--cover);color:#fff;font-size:11.5px;font-weight:700}
+.bk-h span:nth-child(n+3),.bk-r span:nth-child(n+3){text-align:right;font-variant-numeric:tabular-nums}
+.bk-r .m{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bk-r span:nth-child(1){color:var(--mut)}
+.bk-e{padding:18px 10px;color:var(--mut);text-align:center}
+.notice{display:flex;gap:8px;padding:7px 0;border-bottom:1px dashed var(--rule);font-size:13.5px}
+.notice time{color:var(--mut);flex:none;font-variant-numeric:tabular-nums}
+.notice.ok{color:var(--ok)}.notice.err{color:var(--bad)}
+/* 投資 */
+.syms{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.sym{background:var(--paper);color:var(--ink);border:2px solid transparent;border-radius:12px;padding:9px 8px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:1px;min-width:0}
+.sym.on{border-color:var(--gold);box-shadow:0 0 0 2px #d4af3766}
+.sym .tk{font-family:var(--mj);font-size:12px;color:var(--mut);font-weight:800;letter-spacing:.1em}
+.sym b{font-size:12.5px;line-height:1.3;min-height:2.6em}
+.sym .pr{font-family:var(--mj);font-weight:800;font-size:19px;font-variant-numeric:tabular-nums}
+.chg{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.up{color:var(--up)}.dn{color:var(--dn)}
+.spark{display:block;height:28px;margin-top:2px}
+.spark svg{width:100%;height:100%;display:block}
+.ch-h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.ch-h .amt{font-size:28px;text-align:right;line-height:1.1}
+.ch-h .chg{display:block;text-align:right}
+#chart svg{width:100%;height:auto;display:block;margin:8px 0;border-radius:8px;background:#fff;border:1px solid var(--rule)}
+#hinfo{font-size:13.5px;padding:8px 10px;background:var(--paper2);border-radius:8px;margin-bottom:6px}
+.qrow{display:grid;grid-template-columns:1fr;gap:6px}
+#qc{min-height:20px;font-size:13px;color:var(--mut)}
+/* 定期 */
+.ladder{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px}
+.ladder .q{display:flex;flex-direction:column;align-items:center;line-height:1.25;padding:5px 11px}
+.ladder .q small{color:var(--up);font-weight:700}
+.dur{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.amtp{margin-top:6px;word-break:break-all}.amtp b{color:var(--ink)}
+#fp{margin:10px 0 0;padding:10px 12px;background:var(--paper2);border-radius:8px;font-size:14px}
+.item{padding:12px 0;border-bottom:1px dashed var(--rule)}
+.item:last-child{border-bottom:0}
+.item .top{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.ttl{display:inline-block;margin-left:8px;padding:1px 9px;border-radius:99px;background:var(--gold);color:#241a00;font-size:12px;font-weight:800;letter-spacing:.05em;vertical-align:middle}
+.bdg{position:absolute;top:3px;left:calc(50% + 6px);min-width:16px;height:16px;padding:0 4px;border-radius:99px;background:var(--shu);color:#fff;font-size:10px;font-style:normal;line-height:16px;font-weight:700;display:none}
+.mw{display:flex;flex-direction:column;gap:8px;max-height:50vh;overflow:auto;padding:4px 2px;margin:8px 0}
+.mb{max-width:88%;padding:8px 11px;border-radius:12px;font-size:14px;line-height:1.55;white-space:pre-wrap;word-break:break-word;background:var(--paper2)}
+.mb.a{align-self:flex-start;background:#fff6d6;border:1px solid #e6c55a;color:#4a3a05}
+.mb.u{align-self:flex-end}
+.mb.n{outline:2px solid var(--shu)}
+.mb b{display:block;margin-bottom:2px}
+.mb small{display:block;color:var(--mut);font-size:11px;margin-top:3px;white-space:normal}
+#mt{width:100%;min-height:84px;padding:10px;font-size:16px;border:1px solid var(--rule);border-radius:8px;background:#fff;color:var(--ink);font-family:inherit;resize:vertical}
+.prog{height:9px;background:var(--paper2);border-radius:99px;overflow:hidden;margin:8px 0 4px;border:1px solid var(--rule)}
+.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2b6cb0,#4aa3ff)}
+.lock{display:inline-block;font-size:12px;padding:1px 8px;border-radius:99px;background:var(--cover);color:var(--gold2);font-weight:700}
+/* レベル */
+.lvbig{display:flex;align-items:baseline;gap:10px}
+.lvbig b{font-family:var(--mj);font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
+.rk{display:grid;grid-template-columns:34px 1fr auto 56px;gap:8px;align-items:center;padding:9px 6px;border-bottom:1px dashed var(--rule);font-size:15px}
+.rk:last-child{border-bottom:0}
+.rk.h{font-size:12px;color:var(--mut);padding-top:2px}
+.rk.me{background:#fff4c8;border-radius:8px}
+.rk .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rk .r{font-family:var(--mj);font-weight:800;text-align:center}
+.rk .l,.rk .p{text-align:right;font-variant-numeric:tabular-nums}
+/* 融資 */
+.cs{display:flex;align-items:center;gap:14px}
+.cs b{font-family:var(--mj);font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
+.bar{flex:1;height:12px;background:var(--paper2);border-radius:99px;overflow:hidden;border:1px solid var(--rule)}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#c8322f,#d4af37,#1b7f4b)}
+.co{background:var(--paper);color:var(--ink);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 8px 22px #0006;border-left:6px solid var(--tc)}
+.co-h{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.co-h b{font-family:var(--mj);font-size:18px}
+.seal{display:inline-block;padding:2px 9px;border:2px solid var(--tc);color:var(--tc);border-radius:6px;font-family:var(--mj);font-weight:800;font-size:13px;transform:rotate(-4deg);letter-spacing:.06em;background:#fff}
+.t1{--tc:#1b6f8a}.t2{--tc:#2c7a4b}.t3{--tc:#a07a12}.t4{--tc:#b3541e}.t5{--tc:#1a1a1a}
+.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 12px;margin:10px 0;font-size:13.5px}
+.facts span{color:var(--mut)}
+.facts b{font-variant-numeric:tabular-nums}
+.stars{color:var(--shu);letter-spacing:.05em}
+.lp{margin:6px 0 10px;font-size:14px;padding:8px 10px;background:var(--paper2);border-radius:8px}
+.row-l{padding:12px 0;border-bottom:1px dashed var(--rule);display:grid;gap:4px}
+.row-l:last-child{border-bottom:0}
+.due.bad{color:var(--bad);font-weight:700}
+/* 振込 */
+.tx-i{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--rule);flex-wrap:wrap}
+.st{font-size:12px;padding:1px 8px;border-radius:99px;border:1px solid var(--rule);background:#fff}
+.st.pend{color:#8a6a12;border-color:#d4af37}.st.sent{color:var(--ok);border-color:var(--ok)}.st.cancel{color:var(--mut)}
+.demo{padding:9px 12px;background:#fff6d6;border:1px solid #e6c55a;border-radius:8px;font-size:13px;margin-bottom:10px;color:#4a3a05}
+.acno{font-family:var(--mj);font-size:26px;font-weight:800;letter-spacing:.14em}
+/* nav */
+#tabs{position:fixed;left:0;right:0;bottom:0;background:var(--cover2);border-top:1px solid #ffffff22;padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
+#tabs div{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(7,1fr)}
+#tabs button{background:none;border:0;color:#a9b8d0;padding:9px 2px 8px;min-height:56px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:12px;position:relative}
+#tabs button span{font-size:19px;line-height:1.2}
+#tabs button.on{color:var(--gold2);font-weight:700}
+#tabs button.on::before{content:'';position:absolute;top:0;left:22%;right:22%;height:3px;background:var(--shu);border-radius:0 0 3px 3px}
+#toast{position:fixed;left:50%;bottom:calc(74px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);max-width:min(92vw,520px);background:#0b1a36;color:#fff;border:1px solid var(--gold);padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:9;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+#toast.err{border-color:#ff8a80;background:#4a1212}
+#toast.ok{border-color:#7be0a8}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media(max-width:400px){.bk-h,.bk-r{grid-template-columns:3.2em 1fr 3.9em 3.9em 4.6em;font-size:11.5px;gap:4px}.sym b{font-size:11.5px}}
+/* ===== 3D GAME UI LAYER (stage 1) ===== */
+:root{--ease3:cubic-bezier(.2,.9,.25,1.2)}
+body{background:radial-gradient(ellipse 90% 50% at 50% -10%,#2a4f8c88,transparent 70%),radial-gradient(ellipse at 50% 110%,#d4af3722,transparent 55%),linear-gradient(180deg,var(--cover) 0,var(--cover2) 100%) fixed}
+#app{perspective:1400px}
+/* logo & net worth: extruded gold */
+.logo{filter:drop-shadow(0 1px 0 #8a6a12) drop-shadow(0 2px 0 #6b4f0c) drop-shadow(0 3px 0 #4a3608) drop-shadow(0 8px 10px #000a) drop-shadow(0 0 14px #d4af3766)}
+#net{text-shadow:0 1px 0 #8aa0c0,0 2px 0 #52688c,0 3px 0 #2c3f66,0 4px 0 #1a2a4a,0 12px 18px #000a}
+/* summary tiles: glass plates standing on the cover */
+.sumrow div{background:linear-gradient(160deg,#ffffff26,#ffffff08);border-color:#ffffff30;box-shadow:inset 0 1px 0 #ffffff40,0 1px 0 #0a1630,0 2px 0 #0a1630,0 3px 0 #081226,0 10px 14px #0007;transform:rotateX(8deg);transform-origin:50% 100%;transition:transform .2s var(--ease3)}
+.sumrow div:hover{transform:rotateX(0) translateY(-4px)}
+/* paper cards: stacked sheets with depth */
+.card,.co{position:relative;box-shadow:0 1px 0 #d3dde7,0 2px 0 #c2cfdc,0 3px 0 #b3c2d2,0 4px 0 #a2b3c6,0 16px 26px #0009,inset 0 1px 0 #fff;background:linear-gradient(180deg,#fff,var(--paper) 14%,var(--paper2))}
+.card{border-top:4px solid var(--gold)}
+.card::after{content:'';position:absolute;left:0;right:0;top:0;height:60px;border-radius:14px 14px 0 0;background:linear-gradient(#ffffffaa,transparent);pointer-events:none}
+.card>*,.co>*{position:relative;z-index:1}
+.co{transition:transform .22s var(--ease3),box-shadow .22s}
+.co:hover{transform:translateY(-4px) rotateX(2deg);box-shadow:0 1px 0 #d3dde7,0 2px 0 #c2cfdc,0 3px 0 #b3c2d2,0 4px 0 #a2b3c6,0 26px 34px #000a,inset 0 1px 0 #fff}
+/* buttons: chunky keycaps */
+.btn{position:relative;overflow:hidden;box-shadow:0 1px 0 #0a1630,0 2px 0 #0a1630,0 3px 0 #081226,0 4px 0 #060e1e,0 9px 12px #0008,inset 0 2px 0 #ffffff40,inset 0 -3px 5px #0004;transition:transform .12s var(--ease3),box-shadow .12s,filter .15s}
+.btn::before{content:'';position:absolute;left:6%;right:6%;top:2px;height:46%;border-radius:999px 999px 40% 40%;background:linear-gradient(#ffffff70,#fff0);pointer-events:none}
+.btn:not(:disabled):hover{transform:translateY(-3px) perspective(500px) rotateX(10deg);filter:brightness(1.1)}
+.btn:not(:disabled):active{transform:translateY(4px);box-shadow:0 0 0 #060e1e,0 2px 4px #0008,inset 0 3px 8px #0006;filter:brightness(.95)}
+.btn.alt{box-shadow:0 1px 0 #b7c9d8,0 2px 0 #9fb3c6,0 3px 0 #8aa0b6,0 4px 0 #758ba3,0 9px 12px #0006,inset 0 -3px 5px #0001}.btn.alt::before{background:linear-gradient(#fff,#fff0)}
+.btn.buy{box-shadow:0 1px 0 #7a1a1a,0 2px 0 #6a1414,0 3px 0 #561010,0 4px 0 #440c0c,0 9px 12px #0008,inset 0 2px 0 #ffffff40,inset 0 -3px 5px #0004}
+.btn.sell{box-shadow:0 1px 0 #123e7a,0 2px 0 #0f3568,0 3px 0 #0c2c58,0 4px 0 #092348,0 9px 12px #0008,inset 0 2px 0 #ffffff40,inset 0 -3px 5px #0004}
+.btn.gold{box-shadow:0 1px 0 #8a6a12,0 2px 0 #7a5c0e,0 3px 0 #6b4f0c,0 4px 0 #4a3608,0 9px 12px #0008,0 0 18px #d4af3766,inset 0 2px 0 #fff9,inset 0 -3px 5px #0003}
+.q{box-shadow:0 2px 0 #9fb3c6,0 5px 6px #0003;transition:transform .12s var(--ease3),box-shadow .12s}
+.q:not(:disabled):hover{transform:translateY(-2px)}.q:active{transform:translateY(2px);box-shadow:0 0 0 #9fb3c6,inset 0 2px 4px #0003}
+/* stock tiles: pop-up plates */
+.sym{box-shadow:0 1px 0 #d3dde7,0 2px 0 #b3c2d2,0 3px 0 #98aac0,0 4px 0 #8497ae,0 12px 16px #0008;transition:transform .2s var(--ease3),box-shadow .2s;transform-origin:50% 100%}
+.sym:hover{transform:translateY(-5px) rotateX(6deg)}
+.sym.on{transform:translateY(-8px) rotateX(-4deg);box-shadow:0 0 0 2px #d4af3788,0 1px 0 #d3dde7,0 2px 0 #b3c2d2,0 3px 0 #98aac0,0 4px 0 #8497ae,0 22px 26px #000a,0 0 22px #d4af3788}
+/* inputs: recessed */
+input,select{box-shadow:inset 0 3px 6px #14213a22,0 1px 0 #fff}
+input[type=range]{box-shadow:none}
+.two,#fp,#hinfo,.lp{box-shadow:inset 0 2px 6px #14213a1c,0 1px 0 #fff}
+.prog,.bar{box-shadow:inset 0 2px 4px #0003}
+.prog i,.bar i{box-shadow:inset 0 2px 0 #fff6,inset 0 -2px 3px #0003}
+.book{box-shadow:inset 0 0 0 1px #fff,0 6px 10px #0002}
+.rk.me{box-shadow:0 3px 8px #d4af3755}
+.ttl,.lock,.seal{box-shadow:0 2px 0 #0004,inset 0 1px 0 #fff6}
+/* bottom nav: raised console */
+#tabs{background:linear-gradient(#17315c,var(--cover2));border-top:1px solid #ffffff44;box-shadow:0 -1px 0 #000,0 -12px 26px #000a,inset 0 1px 0 #ffffff22}
+#tabs button{transition:transform .18s var(--ease3),color .2s}
+#tabs button span{display:inline-block;filter:drop-shadow(0 2px 0 #0008) drop-shadow(0 4px 3px #0007);transition:transform .22s var(--ease3)}
+#tabs button:hover span{transform:translateY(-3px) scale(1.12)}
+#tabs button.on span{transform:translateY(-5px) scale(1.25) perspective(200px) rotateY(-12deg);filter:drop-shadow(0 2px 0 #5c430a) drop-shadow(0 7px 5px #000a) drop-shadow(0 0 10px #d4af37)}
+#tabs button.on::before{box-shadow:0 0 12px var(--shu),0 3px 0 #7a1a18}
+#toast{box-shadow:0 1px 0 #6b4f0c,0 2px 0 #4a3608,0 14px 24px #000b}
+/* tab-switch entrance: only while #view has .enter (so live re-renders never flicker) */
+#view.enter>*{animation:b3in .55s var(--ease3) backwards;transform-origin:50% 0}
+#view.enter>*:nth-child(2){animation-delay:.07s}#view.enter>*:nth-child(3){animation-delay:.14s}#view.enter>*:nth-child(n+4){animation-delay:.2s}
+@keyframes b3in{from{opacity:0;transform:perspective(900px) translateY(34px) rotateX(-18deg) scale(.96)}}
+@media(hover:none){.co:hover,.sym:hover,.sumrow div:hover{transform:none}}
+/* ===== 3D BUILDING (stage 2) ===== */
+#gate{position:fixed;inset:0;z-index:1000;background:#050810}#gl3d{width:100%;height:100%;display:block}
+#flash{position:absolute;inset:0;pointer-events:none;opacity:0;background:radial-gradient(circle,#fffdf0 0,#ffe9a0 70%,#ffd76a)}
+/* ===== 3D HALL (stage 3) ===== */
+html{background:#0a1a38}#glh{position:fixed;inset:0;width:100%;height:100%;z-index:-2;display:none}
+body.g3h{background:none!important}body.g3h #glh{display:block}
+body.g3h::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,#08142ebb 0,#0a1a3898 38%,#0a1a38e8 100%)}
+</style></head>
+<body>
+<div id="gate" style="display:none"><canvas id="gl3d"></canvas><div id="flash"></div></div>
+<script>try{var n=performance.getEntriesByType('navigation')[0];if(!n||n.type!=='reload')document.getElementById('gate').style.display='block'}catch(e){}</script>
+<canvas id="glh"></canvas>
+<div id="app">
+  <header class="cover">
+    <div class="brand"><div class="logo">2−1 情報処理銀行</div><small>JOHO BANK</small></div>
+    <div class="hr">
+      <select id="fmtsel" class="fsel" hidden onchange="setFmt(this.value)" aria-label="数字の表示形式">
+        <option value="c">1,234,567（コンマ）</option>
+        <option value="j">100京1600兆（日本語）</option>
+        <option value="e">1T300B（英語）</option>
+      </select>
+      <a class="btn s gold" href="./">カジノへ</a>
+    </div>
+  </header>
+  <section class="net">
+    <div><span class="lab">純資産（手持ち＋預金＋投資＋定期−借入）</span><b id="net">0</b></div>
+    <div class="net-r"><span>口座番号 <b id="acct"></b></span><span id="link"></span></div>
+  </section>
+  <div class="sumrow">
+    <div><span>手持ち</span><b id="s-w">0</b></div>
+    <div><span>預金</span><b id="s-d">0</b></div>
+    <div><span>投資</span><b id="s-i">0</b></div>
+    <div><span>定期</span><b id="s-f">0</b></div>
+    <div><span>借入</span><b id="s-l">0</b></div>
+  </div>
+  <main id="view"></main>
+</div>
+<nav id="tabs" aria-label="メニュー"><div>
+  <button data-t="acct" onclick="setTab('acct')"><span>💴</span>口座</button>
+  <button data-t="inv" onclick="setTab('inv')"><span>📈</span>投資</button>
+  <button data-t="fix" onclick="setTab('fix')"><span>🔒</span>定期</button>
+  <button data-t="tx" onclick="setTab('tx')"><span>✉️</span>振込</button>
+  <button data-t="loan" onclick="setTab('loan')"><span>🏛️</span>融資</button>
+  <button data-t="lv" onclick="setTab('lv')"><span>🏅</span>レベル</button>
+  <button data-t="msg" onclick="setTab('msg')"><span>💬</span>運営<i class="bdg" id="mbdg"></i></button>
+</div></nav>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+/* ============ 設定 ============ */
+// ★ Supabase の「Project URL」と「anon public key」を入れてください（Settings → API）
+const SUPABASE={url:'https://rzqhvomycxqqzudhpzen.supabase.co',key:'sb_publishable_8p4zhhVZ1qavPtPSi595WQ_1ZtblEBi'};
+const KEY='cj_bank_v1', WK='cj_wallet', AK='cj_bank_auth', UK='cj_bank_ui';   // KEY：カジノが資産判定に読む写し／WK：カジノと共通の手持ちチップ
+
+/* ============ ユーティリティ ============ */
+const $=s=>document.querySelector(s);
+/* 金額まわり：大きくなる金額（預金・株数・定期など）は BigInt で扱い、サーバーとは文字列でやり取りする */
+const BI=v=>{try{if(typeof v=='bigint')return v;if(typeof v=='number')return BigInt(Math.round(v));return BigInt(String(v).split('.')[0]||'0')}catch(e){return 0n}};
+/* 数字の表示形式：コンマ／日本語の単位／英語の単位（銀行レベル1000万以上の人だけ選べる）。単位表記は大きいほうから2つの単位だけ見せ、それより小さい桁は隠す */
+const JPU=['','万','億','兆','京','垓','秭','穣','溝','澗','正','載','極','恒河沙','阿僧祇','那由他','不可思議','無量大数'],
+      ENU=['','K','M','B','T','Qa','Qi','Sx','Sp','Oc','No','Dc','Ud','Dd','Td','Qad','Qid','Sxd','Spd','Ocd','Nod','Vg'];
+function fmtUnit(b,size,units){   // b：0以上のBigInt。単位が足りない巨大な数は null（コンマ表記にもどす）
+  const s=b.toString(),g=[];
+  for(let e=s.length;e>0;e-=size)g.push(s.slice(Math.max(0,e-size),e));   // g[0]が一番小さい桁
+  if(g.length>units.length)return null;
+  const top=g.length-1;let out='';
+  for(let i=top;i>=Math.max(0,top-1);i--){const v=g[i].replace(/^0+/,'');if(v)out+=v+units[i]}
+  return out||'0'}
+const FMT_LV=1e7;   // 表示形式を選べる銀行レベル（1000万）
+function fmtOk(){try{const l=lvN();if(l>=FMT_LV)return true;if(LV&&LV.level!=null)return false;return Number(localStorage.getItem('cj_bank_lv'))>=FMT_LV}catch(e){return false}}
+const fmt=n=>{try{const b=BI(n),m=fmtOk()?(ui.fmt||'c'):'c';
+  if(m!='c'){const neg=b<0n,a=neg?-b:b,r=m=='j'?fmtUnit(a,4,JPU):fmtUnit(a,3,ENU);if(r!=null)return(neg?'-':'')+r}
+  return b.toLocaleString('ja-JP')}catch(e){return String(n)}};
+const mulP=(q,p)=>BI(q)*BigInt(Math.round(p*100))/100n;   // 株数×株価（株価は小数2桁）
+const J=v=>JSON.stringify(v,(k,x)=>typeof x=='bigint'?x.toString():x);
+const CAP=1e15;   // 手持ち（カジノの財布）の上限：1000兆
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+/* ---- 銀行レベル1000兆以上の人は、入出金・振込の金額を「1〜9999 × 単位」で入れられる（SVIPの賭け金と同じ方式） ---- */
+const BIGLV=1e15;
+function bigOk(){try{const l=lvN();if(l>=BIGLV)return true;if(LV&&LV.level!=null)return false;return Number(localStorage.getItem('cj_bank_lv'))>=BIGLV}catch(e){return false}}
+const amtMax={ma:3,ta:17};   // 使える単位の上限（JPUの添字）。入出金は手持ちの上限が1000兆なので兆まで、振込は無量大数まで
+function amtField(id,ph){
+  if(!bigOk())return `<input id="${id}" type="number" inputmode="numeric" min="1" step="1" placeholder="${ph}">`;
+  const mx=amtMax[id]||17;
+  return `<div class="dur"><input id="${id}n" type="number" inputmode="numeric" min="1" max="9999" step="1" value="1" oninput="amtN('${id}')" aria-label="金額（1〜9999）"><select id="${id}u" onchange="amtN('${id}')" aria-label="単位">${JPU.slice(0,mx+1).map((u,i)=>`<option value="${i*4}">${u||'（単位なし）'}</option>`).join('')}</select></div><input id="${id}" type="hidden" value="1"><div class="mut amtp" id="${id}p"></div>`}
+function amtPrev(id){const p=$('#'+id+'p');if(!p)return;const v=num('#'+id);
+  p.innerHTML=v>0n?`＝ <b>${v.toLocaleString('ja-JP')}</b>${fmtUnit(v,4,JPU)&&fmtUnit(v,4,JPU)!=v.toLocaleString('ja-JP')?`（${fmtUnit(v,4,JPU)}）`:''}`:'金額は 1〜9999 と単位で入力します'}
+const amtEx={};   // 「手持ち全部」などで入れた、1〜9999＋単位では表せない半端な額
+function amtN(id){const ne=$('#'+id+'n'),ue=$('#'+id+'u');if(!ne||!ue)return;delete amtEx[id];
+  let n=Math.floor(+ne.value);if(!(n>=1))n=0;if(n>9999){n=9999;ne.value=9999}
+  $('#'+id).value=n>0?(BigInt(n)*10n**BigInt(+ue.value)).toString():'';amtPrev(id)}
+function amtSync(id){const ne=$('#'+id+'n'),ue=$('#'+id+'u');if(!ne||!ue){return}   // 「手持ち全部」「預金全部」などで入れた値を、1〜9999＋単位の形に直す
+  const v=num('#'+id),mx=amtMax[id]||17;let best=null;
+  if(v>0n)for(let i=mx;i>=0;i--){const d=10n**BigInt(i*4);if(v%d==0n&&v/d<=9999n){best=[v/d,i];break}}
+  delete amtEx[id];if(best){ne.value=best[0].toString();ue.value=String(best[1]*4)}else if(v>0n){amtEx[id]=v;ne.value=''}
+  amtPrev(id)}
+function amtRest(id){if(!$('#'+id+'n'))return;if(amtEx[id]){$('#'+id).value=amtEx[id].toString();amtPrev(id)}else amtN(id)}   // 画面を描き直したあとの復元   // 割り切れない半端な額は、そのままの数値（隠し欄）で送る
+const num=s=>{const t=String(($(s)||{}).value||'').trim().replace(/,/g,'');if(/^\d+$/.test(t))return BigInt(t);const n=Math.floor(+t);return Number.isFinite(n)&&n>0?BigInt(n):0n};   // 金額・株数（BigInt）
+const numN=s=>Math.max(0,Math.floor(+$(s).value)||0);   // 小さい数（信用取引の株数）
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const p2=n=>String(n).padStart(2,'0');
+const fmtDate=t=>{const d=new Date(t);return `${d.getMonth()+1}/${d.getDate()} ${p2(d.getHours())}:${p2(d.getMinutes())}`};
+const fmtD=t=>{const d=new Date(t),n=new Date();return d.toDateString()==n.toDateString()?`${p2(d.getHours())}:${p2(d.getMinutes())}`:`${d.getMonth()+1}/${d.getDate()}`};
+function fmtDur(ms){const s=Math.max(0,Math.ceil(ms/1000)),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),x=s%60;
+  if(d)return `${d}日${h}時間`;if(h)return `${h}時間${p2(m)}分`;if(m)return `${m}分${p2(x)}秒`;return `${x}秒`}
+function fmtMin(m){if(m>=1440&&m%1440==0)return `${m/1440}日`;if(m>=60&&m%60==0)return `${m/60}時間`;if(m>=60)return `${Math.floor(m/60)}時間${m%60}分`;return `${m}分`}
+
+/* ============ Supabase（RPC） ============ */
+async function rpc(fn,args){
+  if(!SUPABASE.url||!SUPABASE.key)throw new Error('Supabaseの設定がまだです（bank.html の SUPABASE に URL と key を入れてください）');
+  let r;
+  try{r=await fetch(SUPABASE.url.replace(/\/$/,'')+'/rest/v1/rpc/'+fn,{method:'POST',
+    headers:{'Content-Type':'application/json',apikey:SUPABASE.key,Authorization:'Bearer '+SUPABASE.key},body:J(args||{})})}
+  catch(e){throw new Error('通信に失敗しました。ネットワークを確認してください')}
+  let j=null;try{j=await r.json()}catch(e){}
+  if(!r.ok)throw new Error((j&&j.message)||'エラーが発生しました（'+r.status+'）');
+  return j;
+}
+
+/* ============ 手持ちチップ（カジノと共通） ============ */
+let memW=null;
+function wRaw(){try{const v=JSON.parse(localStorage.getItem(WK));if(v&&Number.isFinite(v.chips))return v}catch(e){}return null}
+function wallet(){const v=wRaw();if(v)return Math.min(CAP,Math.floor(v.chips));if(memW==null){memW=1000;setWallet(1000)}return memW}
+function setWallet(n){memW=Math.min(CAP,Math.floor(n));try{localStorage.setItem(WK,JSON.stringify({chips:memW,t:Date.now(),src:'bank'}))}catch(e){}}
+
+/* ============ 状態 ============ */
+let A=(()=>{try{const v=JSON.parse(localStorage.getItem(AK));if(v&&v.acct&&v.secret)return v}catch(e){}return null})();   // {acct, secret}
+let ui=(()=>{try{return Object.assign({tab:'acct',sel:'',fmt:'c'},JSON.parse(localStorage.getItem(UK))||{})}catch(e){return{tab:'acct',sel:''}}})();
+let S=null;            // サーバーから受け取った口座の状態
+let SYMS=[],LOANS=[];  // 銘柄・融資会社（サーバー定義）
+let MK={};             // 株価 {sym:{p,h:[...]}}
+let skew=0,seq=0,busy=false,mkBusy=false,lastFetch=0,lastSig='',seenNotice=0,seenNews=0,loginErr='';
+const now=()=>Date.now()+skew;
+const CO=id=>LOANS.find(c=>c.id==id)||{name:id};
+const H=id=>(S&&S.hold[id])||{q:0n,c:0n};
+const P=id=>MK[id]?MK[id].p:(S&&S.px[id])||0;
+const saveUi=()=>{try{localStorage.setItem(UK,JSON.stringify(ui))}catch(e){}};
+const saveAuth=()=>{try{A?localStorage.setItem(AK,JSON.stringify(A)):localStorage.removeItem(AK)}catch(e){}};
+
+let tt;
+function toast(m,k){const e=$('#toast');e.textContent=m;e.className='on '+(k||'');clearTimeout(tt);tt=setTimeout(()=>e.className='',3400)}
+
+/* 集計 */
+const MGC=()=>(S&&S.mgc)||{rate:.005,liq:.8,levs:[2,3,5]};
+const mgInt=(p,t)=>p.e*p.q*MGC().rate*Math.max(0,(t-p.t)/3600000);                                    // 金利の累計
+const mgEq=(p,t)=>p.m+(p.side=='long'?P(p.sym)-p.e:p.e-P(p.sym))*p.q-mgInt(p,t);                      // 評価額（サーバーと同じ式）
+const mgV=t=>S&&S.margin?S.margin.reduce((a,p)=>a+Math.max(0,mgEq(p,t)),0):0;
+const invV=()=>S?SYMS.reduce((a,d)=>a+mulP(H(d.id).q,P(d.id)),0n)+BI(mgV(now())):0n;
+const fixV=()=>S?S.fixed.reduce((a,f)=>a+f.amt,0n):0n;
+const owed=(l,t)=>l.amt+l.int+(t>l.due?Math.round(l.amt*.01*Math.floor((t-l.due)/60000)):0);
+const loanV=t=>S?S.loans.reduce((a,l)=>a+owed(l,t),0):0;
+
+/* カジノ側の「資産あり？」判定用に、サーバーの状態の写しを置く */
+function mirror(){try{const hold={},s={};SYMS.forEach(d=>{hold[d.id]={q:H(d.id).q};s[d.id]={p:P(d.id)}});
+  localStorage.setItem(KEY,J({v:2,srv:1,dep:S.dep,fixed:S.fixed.map(f=>({amt:f.amt})),hold,mg:Math.floor(mgV(now())),mk:{s}}))}catch(e){}}
+
+/* ============ サーバーとの同期（軽量版） ============ */
+// 定期的に取るのは「軽い状態」だけ。固定データは最初の1回、履歴は通帳/振込タブで必要なときだけ取る。
+let STATIC=null,HIST={led:[],tx:[],notices:[]},histV='',histStale=true,hBusy=false;
+const needH=()=>ui.tab=='acct'||ui.tab=='tx';   // 履歴（通帳・振込履歴・お知らせ）を使う画面
+async function fetchHist(){
+  if(!A||hBusy)return false;hBusy=true;
+  try{
+    const h=await rpc('bank_history',{p_acct:A.acct,p_secret:A.secret});
+    (h.led||[]).forEach(e=>{e.o=BI(e.o);e.i=BI(e.i);e.b=BI(e.b)});(h.tx||[]).forEach(x=>{x.a=BI(x.a)});HIST={led:h.led,tx:h.tx,notices:h.notices};histV=JSON.stringify(h.hv);histStale=false;
+    if(S){S.led=HIST.led;S.tx=HIST.tx;S.notices=HIST.notices}
+    return true;
+  }catch(e){return false}finally{hBusy=false}
+}
+function syncHist(){if(S&&needH()&&histStale&&!hBusy)fetchHist().then(ok=>{if(ok&&S&&needH())render()})}
+async function refresh(withMk){
+  if(!A)return;
+  if(!S){HIST={led:[],tx:[],notices:[]};histV='';histStale=true}   // 口座を切り替えた直後
+  const my=++seq;lastFetch=Date.now();
+  const useMk=!!withMk&&!!S&&!mkBusy;if(useMk)mkBusy=true;       // 投資タブでは株価の差分も同じ通信で受け取る
+  try{
+    const args={p_acct:A.acct,p_secret:A.secret,p_nsince:S?seenNotice:null};
+    if(useMk){args.p_mk=true;if(mkSince!=null)args.p_since=mkSince}
+    const [st,s]=await Promise.all([STATIC?null:rpc('bank_static'),rpc('bank_state_lite',args)]);
+    if(st)STATIC=st;
+    if(my<seq)return;
+    if(needH()&&(!S||JSON.stringify(s.hv)!=histV))await fetchHist();   // 画面に必要で、履歴が変わっていたときだけ
+    if(my<seq)return;
+    applyState(s);
+    if(s.mk){applyMk(s.mk);if(S)updateLive()}
+  }catch(e){
+    if(/口座が見つかりません/.test(e.message)){A=null;S=null;saveAuth();loginErr=e.message;render();return}
+    toast(e.message,'err');
+  }finally{if(useMk)mkBusy=false}
+}
+function normS(s){s.dep=BI(s.dep);for(const k in(s.hold||{})){const h=s.hold[k];h.q=BI(h.q);h.c=BI(h.c)}(s.fixed||[]).forEach(f=>{f.amt=BI(f.amt);f.int=BI(f.int)})}
+function applyState(s){
+  const first=!S;normS(s);
+  {const sg=J([s.dep,s.hv,s.fixed&&s.fixed.length,s.hold,s.margin&&s.margin.length]);quietN=sg===lastSg?Math.min(3,quietN+1):0;lastSg=sg}
+  skew=s.now-Date.now();
+  s.syms=STATIC.syms;s.cos=STATIC.cos;s.mgc=STATIC.mgc;                 // 固定データ
+  s.led=HIST.led;s.tx=HIST.tx;s.notices=HIST.notices;                    // 履歴（取得済みのもの）
+  S=s;SYMS=s.syms;LOANS=s.cos;
+  for(const k in s.px){MK[k]=MK[k]||{p:+s.px[k],h:[+s.px[k]]};MK[k].p=+s.px[k]}
+  if(!SYMS.some(d=>d.id==ui.sel)){ui.sel=SYMS[0].id;saveUi()}
+  const maxId=s.hv[2]||0;
+  if(first){seenNotice=maxId;seenNews=s.news?s.news.at:0;pollMk()}
+  else{
+    (s.fresh||[]).filter(n=>n.id>seenNotice).reverse().forEach(n=>toast(n.m,n.k));
+    seenNotice=Math.max(seenNotice,maxId);
+    if(s.news&&s.news.at>seenNews){if(now()-s.news.at<60000)toast(s.news.msg,s.news.msg.startsWith('📈')?'ok':'err');seenNews=s.news.at}
+  }
+  if(JSON.stringify(s.hv)!=histV)histStale=true;
+  mirror();
+  const sig=J([s.dep,s.credit,s.name,s.hold,s.margin,s.fixed,s.apps,s.loans]);
+  if(first||sig!=lastSig){lastSig=sig;render()}else updateLive();
+  syncHist();
+}
+let mkSince=null;   // 受け取り済みの最新の履歴ID（nullなら全履歴を取る）
+function applyMk(m){
+  let mx=mkSince;
+  for(const k in m){
+    const d=m[k],nh=(d.h||[]).map(Number),cur=MK[k];
+    if(d.last!=null)mx=Math.max(mx==null?0:mx,+d.last);
+    if(d.full!==false||!cur)MK[k]={p:+d.p,h:nh};                       // 全履歴（初回・長時間離脱後・旧サーバー）
+    else{cur.p=+d.p;if(nh.length)cur.h=cur.h.concat(nh).slice(-300)}   // 差分を末尾に足す（最大300点）
+  }
+  mkSince=mx;
+}
+async function pollMk(){
+  if(mkBusy||!S)return;mkBusy=true;
+  try{
+    // 初回は引数なし（全履歴）、以降は「この ID より新しい行だけ」を要求する
+    applyMk(await rpc('bank_market_get',mkSince==null?{}:{p_since:mkSince}));
+    if(S)updateLive();
+  }catch(e){}finally{mkBusy=false}
+}
+/* 操作を実行 → 状態を取り直す */
+async function act(fn,args,okMsg){
+  if(busy)return{ok:false};busy=true;
+  try{
+    const r=await rpc(fn,Object.assign({p_acct:A.acct,p_secret:A.secret},args||{}));
+    await refresh();
+    if(okMsg)toast(typeof okMsg=='function'?okMsg(r):okMsg,'ok');
+    return{ok:true,r};
+  }catch(e){toast(e.message,'err');return{ok:false}}
+  finally{busy=false}
+}
+
+/* ============ 口座のひらき方 ============ */
+async function doCreate(){
+  if(busy)return;busy=true;
+  try{const r=await rpc('bank_create',{p_name:$('#cn').value.trim().slice(0,12)});
+    A={acct:r.acct,secret:r.secret};saveAuth();loginErr='';S=null;await refresh();
+    toast('口座を開設しました。「振込」タブの引き継ぎコードを必ず控えてください','ok');
+  }catch(e){toast(e.message,'err')}finally{busy=false}
+}
+async function doImport(){
+  const m=$('#cc').value.trim().match(/^(\d{6})-([0-9A-Za-z]{64})$/);
+  if(!m)return toast('引き継ぎコードの形式が正しくありません','err');
+  A={acct:m[1],secret:m[2]};saveAuth();loginErr='';S=null;await refresh();
+  if(S)toast('口座に入りました','ok');
+}
+function copyCode(){
+  const c=A.acct+'-'+A.secret;
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(c).then(()=>toast('引き継ぎコードをコピーしました','ok'),()=>prompt('コピーしてください',c));
+  else prompt('コピーしてください',c);
+}
+function logout(){
+  if(!confirm('この端末から口座を外します。引き継ぎコードを控えていないと、二度と入れなくなります。よろしいですか？'))return;
+  A=null;S=null;saveAuth();try{localStorage.removeItem(KEY)}catch(e){}lastSig='';render();
+}
+
+/* ============ 口座 ============ */
+function setV(sel,v){$(sel).value=v;if(sel=='#qty')qtyPrev();if(sel=='#ma'||sel=='#ta')amtSync(sel.slice(1))}
+async function doIn(){const a=num('#ma');if(a<1)return toast('金額を入力してください','err');if(a>wallet())return toast('手持ちチップが足りません','err');
+  setWallet(wallet()-Number(a));const r=await act('bank_deposit',{p_amt:a},`${fmt(a)}チップを預金に入金しました`);if(!r.ok)setWallet(wallet()+Number(a));updateLive()}
+async function doOut(){const a=num('#ma');if(a<1)return toast('金額を入力してください','err');if(a>S.dep)return toast('預金残高が足りません','err');
+  if(a>BigInt(CAP-wallet()))return toast(`手持ちは1000兆までです（あと ${fmt(CAP-wallet())} まで出金できます）`,'err');
+  const r=await act('bank_withdraw',{p_amt:a},`${fmt(a)}チップを手持ちへ出金しました`);if(r.ok)setWallet(wallet()+Number(a));updateLive()}
+
+/* ============ 投資 ============ */
+/* ---- 信用取引・空売り ---- */
+/* レベル報酬：建玉上限はLv100ごとに+100億（基本100億・最大10兆）／待ち時間はLv500ごとに-10秒（基本30秒・最小10秒）／カジノの通信料はLv1000ごとに-0.1%（基本1%・最小0.1%） */
+const lvN=()=>LV&&LV.level!=null?Math.max(0,Math.floor(Number(LV.level))||0):0;
+const mgLimitAt=l=>Math.min(1e13,1e10*(1+Math.floor(l/100))),mgWaitAt=l=>Math.max(10,30-10*Math.floor(l/500)),feeAt=l=>Math.max(1,10-Math.floor(l/1000))/10;   // feeAt＝通信料（％）
+const MGL=()=>mgLimitAt(lvN()),MGW=()=>mgWaitAt(lvN())*1000;   // 1回の建玉の上限／建ててから決済できるまで・決済後に建てられるまで（ミリ秒）
+const LV_TITLES=[[0,'見習い'],[1,'ルーキー'],[10,'常連'],[50,'資産家'],[100,'富豪'],[500,'大富豪'],[1000,'財閥'],[5000,'王'],[10000,'伝説']],
+  lvTitle=l=>{let r=LV_TITLES[0][1];for(const [m,n] of LV_TITLES)if(l>=m)r=n;return r};
+let mgCd=0;                                     // 次に建てられるようになる時刻（決済後30秒）
+function mgCard(){
+  if(!S.mgc)return '';
+  if(!LV&&!lvBusy)fetchLv();   // サーバー側が未更新のときは出さない
+  const c=MGC(),L=S.margin||[],has=L.some(p=>p.sym==ui.sel),d=SYMS.find(x=>x.id==ui.sel);
+  const form=has
+    ?`<p class="lp">この銘柄にはすでに信用建玉があります。決済すると、新しく建てられます。</p>`
+    :`<label class="lab" for="mq">株数</label><input id="mq" type="number" inputmode="numeric" min="1" step="1" value="10" oninput="mgPrev()">
+  <div class="qs"><button class="q" onclick="setV('#mq',10);mgPrev()">10</button><button class="q" onclick="setV('#mq',100);mgPrev()">100</button><button class="q" onclick="setV('#mq',1000);mgPrev()">1000</button><button class="q" onclick="mgMax()">買える最大</button></div>
+  <label class="lab" for="ml">倍率</label><select id="ml" onchange="mgPrev()">${c.levs.map(l=>`<option value="${l}"${l==3?' selected':''}>${l}倍</option>`).join('')}</select>
+  <div id="mp" class="lp"></div>
+  <div class="btns"><button class="btn buy" onclick="mgOpen('long')">信用買い</button><button class="btn sell" onclick="mgOpen('short')">空売り</button></div>`;
+  const rule=`<p class="mut">預金を<b>保証金</b>にして、その${c.levs.join('・')}倍までの株を取引します。<b>信用買い</b>は値上がりで得、<b>空売り</b>は値下がりで得。損益は倍率ぶん大きくなります。損失が保証金の${Math.round(c.liq*100)}％に達すると自動で<b>ロスカット</b>（強制決済）。損失は保証金までで、借金にはなりません。保有中は建玉の${+(c.rate*100).toFixed(2)}％／時間の金利がかかります。<br><b>1回の建玉は${fmt(MGL())}まで</b>。建ててから<b>${MGW()/1000}秒間は決済できず</b>、決済したあと<b>${MGW()/1000}秒間は新しく建てられません</b>。<span class="mut">（レベルが上がると上限が増え、待ち時間が短くなります）</span></p>`;
+  const lst=L.length?`<div class="card"><h2>信用建玉 <small>含み損益はリアルタイム</small></h2>${L.map(mgItem).join('')}</div>`:'';
+  return `<div class="card"><h2>信用取引・空売り <small>${esc(d.name)}</small></h2>${rule}${form}</div>${lst}`}
+function mgItem(p){
+  const dn=SYMS.find(x=>x.id==p.sym)||{name:p.sym},k=x=>`data-mg="${p.sym}:${x}"`;
+  return `<div class="item"><div class="top"><b>${esc(dn.name)} <span class="lock">${p.side=='long'?'信用買い':'空売り'} ×${p.lev}</span></b><b class="amt" style="font-size:20px" ${k('pl')}></b></div>
+  <div class="mut">${fmt(p.q)}株 ／ 建値 ${(+p.e).toFixed(1)} → 現在値 <b ${k('px')}></b> ／ 保証金 ${fmt(p.m)}</div>
+  <div class="mut">評価額 <b ${k('eq')}></b> ／ 金利累計 <b ${k('it')}></b> ／ ロスカット <b ${k('lq')}></b></div>
+  <div class="prog"><i ${k('bar')} style="width:0"></i></div><div class="mut">ロスカットまでの余裕（右へ行くほど危険）</div>
+  <div class="mut" ${k('hd')}></div>
+  <button class="btn s" style="margin-top:8px" ${k('btn')} onclick="mgClose('${p.sym}')">決済する</button></div>`}
+function mgLive(){
+  if(!S||!S.mgc||!S.margin)return;
+  const t=now(),c=MGC();
+  S.margin.forEach(p=>{
+    const q=k=>document.querySelector(`[data-mg="${p.sym}:${k}"]`);if(!q('pl'))return;
+    const eq=mgEq(p,t),pl=eq-p.m,it=mgInt(p,t),dist=(p.m*c.liq-it)/p.q,lq=Math.max(0,p.side=='long'?p.e-dist:p.e+dist),use=clamp((p.m-eq)/(p.m*c.liq),0,1);
+    const a=q('pl');a.textContent=(pl>=0?'+':'−')+fmt(Math.abs(pl));a.className='amt '+(pl>=0?'up':'dn');
+    q('px').textContent=P(p.sym).toFixed(1);q('eq').textContent=fmt(Math.max(0,eq));q('it').textContent=fmt(it);q('lq').textContent=lq.toFixed(1)+(p.side=='long'?' 以下':' 以上');
+    const b=q('bar');b.style.width=(use*100).toFixed(1)+'%';b.style.background=use<.5?'#1b7f4b':use<.8?'#d4af37':'#c8322f';
+    const rem=Math.ceil((p.t+MGW()-t)/1000),hd=q('hd'),bt=q('btn');
+    if(hd)hd.textContent=rem>0?`⏳ あと${rem}秒で決済できます`:'';if(bt)bt.disabled=rem>0});
+  mgPrev()}
+function mgPrev(){
+  const e=$('#mq'),o=$('#mp');if(!e||!o)return;
+  const q=Math.max(0,Math.floor(+e.value)||0),l=+$('#ml').value,p=P(ui.sel),c=MGC();
+  if(!q){o.innerHTML='株数を入力してください';return}
+  if(p<=0){o.innerHTML='株価がマイナス（0以下）の間は信用買い・空売りができません';return}
+  const n=Math.round(p*q),m=Math.max(1,Math.ceil(n/l)),dd=m*c.liq/q,cd=Math.ceil((mgCd-now())/1000);
+  const warn=(cd>0?`<span class="dn">⏳ 決済後のため、あと${cd}秒は建てられません</span><br>`:'')+(n>MGL()?`<span class="dn">1回の建玉は${fmt(MGL())}までです（今回 ${fmt(n)}）</span><br>`:'');
+  o.innerHTML=warn+`建玉 <b>${fmt(n)}</b> ／ 必要な保証金 <b>${fmt(m)}</b>（預金から引かれます）<br>ロスカット目安：信用買い <b>${Math.max(0,p-dd).toFixed(1)}</b> 以下 ／ 空売り <b>${(p+dd).toFixed(1)}</b> 以上<br>金利：約 <b>${fmt(Math.round(n*c.rate))}</b> ／ 時間`}
+function mgMax(){const l=+$('#ml').value,p=P(ui.sel);if(p<=0)return toast('株価がマイナス（0以下）の間は建てられません','err');setV('#mq',Math.max(1,Math.floor(Math.min(Number(S.dep)*l,MGL())/p)));mgPrev()}
+function mgOpen(side){
+  const q=numN('#mq'),l=+$('#ml').value,d=SYMS.find(x=>x.id==ui.sel);
+  if(q<1)return toast('株数を入力してください','err');
+  if(P(ui.sel)<=0)return toast('株価がマイナス（0以下）の間は信用買い・空売りができません','err');
+  const cd=Math.ceil((mgCd-now())/1000);
+  if(cd>0)return toast(`決済したあと${MGW()/1000}秒間は建てられません（あと${cd}秒）`,'err');
+  if(Math.round(P(ui.sel)*q)>MGL())return toast(`1回の建玉は${fmt(MGL())}までです`,'err');
+  const m=Math.max(1,Math.ceil(Math.round(P(ui.sel)*q)/l));
+  if(m>S.dep)return toast(`預金が足りません（必要な保証金 ${fmt(m)}）`,'err');
+  act('bank_margin_open',{p_sym:d.id,p_side:side,p_qty:q,p_lev:l},r=>`${d.name}を${side=='long'?'信用買い':'空売り'}しました（${(+r.price).toFixed(1)}・保証金${fmt(r.margin)}）`)}
+async function mgClose(sym){
+  const d=SYMS.find(x=>x.id==sym)||{name:sym},p=(S.margin||[]).find(x=>x.sym==sym);
+  const rem=p?Math.ceil((p.t+MGW()-now())/1000):0;
+  if(rem>0)return toast(`建ててから${MGW()/1000}秒間は決済できません（あと${rem}秒）`,'err');
+  const r=await act('bank_margin_close',{p_sym:sym},r=>`${d.name}の建玉を決済しました（受取 ${fmt(r.pay)}・損益 ${r.pnl>=0?'+':'−'}${fmt(Math.abs(r.pnl))}）`);
+  if(r.ok)mgCd=now()+MGW()}
+function selSym(id){ui.sel=id;saveUi();render();pollMk()}
+const maxBuy=()=>{const pc=BigInt(Math.round(P(ui.sel)*100));if(pc<=0n)return 0n;const x=S.dep*100n/pc,mx=10n**30n;return x>mx?mx:x};
+const NEGMSG='株価がマイナス（0以下）の間は買えません';
+function qtyPrev(){const e=$('#qty');if(!e)return;const q=num('#qty'),p=P(ui.sel);$('#qc').textContent=p<=0?NEGMSG:q?`${fmt(q)}株 × ${p.toFixed(1)} ＝ 約${fmt(mulP(q,p))}チップ`:''}
+function buy(){const q=num('#qty');if(q<1)return toast('株数を入力してください','err');if(P(ui.sel)<=0)return toast(NEGMSG,'err');const d=SYMS.find(x=>x.id==ui.sel);
+  act('bank_buy',{p_sym:d.id,p_qty:q},r=>`${d.name}を${q}株買いました（${(+r.price).toFixed(1)}）`)}
+function sell(){const q=num('#qty');const d=SYMS.find(x=>x.id==ui.sel);if(q<1)return toast('株数を入力してください','err');if(q>H(d.id).q)return toast(`保有は${H(d.id).q}株です`,'err');
+  act('bank_sell',{p_sym:d.id,p_qty:q},r=>`${d.name}を${q}株売りました（${(+r.price).toFixed(1)}）`)}
+function hinfo(){const h=H(ui.sel),p=P(ui.sel),v=mulP(h.q,p),pl=v-h.c;
+  return h.q?`保有 <b>${fmt(h.q)}株</b> ／ 評価額 <b>${fmt(v)}</b> ／ 取得平均 ${(Number(h.c*100n/h.q)/100).toFixed(1)} ／ 評価損益 <b class="${pl>=0?'up':'dn'}">${pl>=0?'+':''}${fmt(pl)}</b>`:'この銘柄は持っていません'}
+function spark(h){const a=h.length<2?[h[0],h[0]]:h;let mn=Math.min(...a),mx=Math.max(...a);if(mx-mn<1e-9){mx+=1;mn-=1}
+  const pts=a.map((v,i)=>`${(i/(a.length-1)*100).toFixed(1)},${(26-(v-mn)/(mx-mn)*24).toFixed(1)}`).join(' ');
+  return `<svg viewBox="0 0 100 28" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="${a[a.length-1]>=a[0]?'#c62839':'#1f6fd1'}" stroke-width="1.6" vector-effect="non-scaling-stroke"/></svg>`}
+function chartSVG(h){const W=600,H=220,a=h.length<2?[h[0],h[0]]:h;let mn=Math.min(...a),mx=Math.max(...a);if(mx-mn<Math.abs(mn)*.002+1e-9){const e=Math.abs(mn)*.001+.01;mx+=e;mn-=e}
+  const pad=(mx-mn)*.14;mn-=pad;mx+=pad;const X=i=>i/(a.length-1)*W,Y=v=>H-(v-mn)/(mx-mn)*H;
+  const pts=a.map((v,i)=>`${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(' '),up=a[a.length-1]>=a[0],c=up?'#c62839':'#1f6fd1';
+  const grid=[0,1,2,3].map(i=>{const y=(H/3*i).toFixed(1),v=mx-(mx-mn)/3*i;return `<line x1="0" x2="${W}" y1="${y}" y2="${y}" stroke="#d6e1ea" stroke-width="1"/><text x="${W-6}" y="${Math.min(H-4,+y+13)}" text-anchor="end" font-size="12" fill="#5a6b85">${v.toFixed(1)}</text>`}).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="株価チャート">${grid}<line x1="0" x2="${W}" y1="${Y(a[0]).toFixed(1)}" y2="${Y(a[0]).toFixed(1)}" stroke="#8d9db8" stroke-dasharray="4 4"/><polygon points="0,${H} ${pts} ${W},${H}" fill="${c}" opacity=".10"/><polyline points="${pts}" fill="none" stroke="${c}" stroke-width="2.4" stroke-linejoin="round"/><circle cx="${W}" cy="${Y(a[a.length-1]).toFixed(1)}" r="4.5" fill="${c}"/></svg>`}
+
+/* ============ 定期預金 ============ */
+const rateFor=m=>Math.min(8,Math.round(0.15*Math.sqrt(m)*100)/100);   // サーバーと同じ式（表示用）
+function fdMins(){return clamp(Math.round((+$('#fv').value||0)*(+$('#fu').value)),1,43200)}
+function fdPrev(){const a=num('#fa'),m=fdMins(),r=rateFor(m),i=(a*BigInt(Math.round(r*100))+5000n)/10000n;
+  $('#fp').innerHTML=`ロック <b>${fmtMin(m)}</b> ／ 利率 <b>${r}%</b> ／ 満期受取 <b>${fmt(a+i)}</b>（利息 ${fmt(i)}）<br><span class="mut">満期日時 ${fmtDate(now()+m*60000)}</span>`}
+function fdSet(v,u){$('#fv').value=v;$('#fu').value=u;fdPrev()}
+function fdOpen(){const a=num('#fa');if(a<10)return toast('10チップ以上で預けられます','err');if(a>S.dep)return toast('預金が足りません','err');
+  const m=fdMins();act('bank_fixed_open',{p_amt:a,p_mins:m},`定期預金を開始：${fmt(a)}チップを${fmtMin(m)}ロック`)}
+
+/* ============ 振込 ============ */
+async function setName(v){const r=await act('bank_set_name',{p_name:v.trim().slice(0,12)},'口座名義を変更しました');if(!r.ok)render()}
+let lkT;
+function lkPrev(){const v=$('#tt').value.trim(),o=$('#tn');clearTimeout(lkT);if(!/^\d{6}$/.test(v)){o.textContent='';return}
+  lkT=setTimeout(async()=>{try{const n=await rpc('bank_lookup',{p_acct:v});if($('#tt')&&$('#tt').value.trim()==v)$('#tn').textContent=n?`宛先：${n}`:'この口座番号は見つかりません'}catch(e){}},250)}
+async function doTx(){const to=$('#tt').value.trim(),a=num('#ta'),memo=$('#tm').value.trim().slice(0,30);
+  if(!/^\d{6}$/.test(to))return toast('相手の口座番号は6桁の数字です','err');if(to==S.acct)return toast('自分の口座には振り込めません','err');
+  if(a<1)return toast('金額を入力してください','err');if(a>S.dep)return toast('預金が足りません','err');
+  const r=await act('bank_transfer',{p_to:to,p_amt:a,p_memo:memo},`${to} に ${fmt(a)}チップを振り込みました`);
+  if(r.ok){$('#ta').value='';amtN('ta');$('#tm').value='';$('#tt').value='';$('#tn').textContent=''}}
+
+/* ============ 融資 ============ */
+const pApprove=(c,amt)=>clamp(Math.round(110-c.diff+(S.credit-50)*.6-30*(amt/c.max)),3,97);
+const reviewSec=(c,amt)=>Math.round(c.rv[0]+c.rv[1]*amt/c.max);
+function lprev(id){const c=CO(id),e=$('#la-'+id),o=$('#lp-'+id);if(!e||!o)return;const a=+e.value,p=pApprove(c,a),i=Math.round(a*c.rate/100);
+  o.innerHTML=`借入 <b>${fmt(a)}</b> → 返済 <b>${fmt(a+i)}</b><br>審査 約<b>${fmtDur(reviewSec(c,a)*1000)}</b> ／ 通過の見込み <b>${p}%</b>`}
+function apply(id){const c=CO(id),a=+$('#la-'+id).value;
+  act('bank_loan_apply',{p_co:id,p_amt:a},()=>`${c.name}に${fmt(a)}チップの融資を申し込みました。審査結果をお待ちください`)}
+function repay(id){act('bank_loan_repay',{p_id:id},r=>r.late?'延滞分も含めて返済しました':'期限内に返済しました。信用スコア＋4')}
+
+/* ============ 画面 ============ */
+const stars=n=>'★'.repeat(n)+'☆'.repeat(5-n);
+function ledger(){return `<div class="book"><div class="bk-h"><span>日付</span><span>摘要</span><span>お支払</span><span>お預り</span><span>差引残高</span></div>${
+  S.led.slice(0,5).map(e=>`<div class="bk-r"><span>${fmtD(e.t)}</span><span class="m">${esc(e.m)}</span><span>${e.o?fmt(e.o):''}</span><span>${e.i?fmt(e.i):''}</span><span>${fmt(e.b)}</span></div>`).join('')||'<div class="bk-e">取引はまだありません。手持ちチップを入金してみましょう。</div>'}</div>`}
+function coCard(c){
+  const used=S.loans.filter(l=>l.co==c.id).reduce((a,l)=>a+l.amt,0),pend=S.apps.some(a=>a.co==c.id),left=c.max-used,mx=Math.floor(left/c.step)*c.step,ok=mx>=c.min&&!pend;
+  const v=clamp(Math.round(c.max*.3/c.step)*c.step,c.min,Math.max(c.min,mx));
+  return `<div class="co ${c.cls}"><div class="co-h"><b>${c.name}</b><span class="seal">${c.tier}</span></div>
+  <div class="facts"><div><span>利率　</span><b>${c.rate}%</b></div><div><span>返済期限　</span><b>${fmtMin(c.term)}</b></div>
+  <div><span>最大融資　</span><b>${fmt(c.max)}</b></div><div><span>審査　</span><b class="stars">${stars(c.stars)}</b></div></div>
+  ${ok?`<input type="range" id="la-${c.id}" min="${c.min}" max="${mx}" step="${c.step}" value="${v}" oninput="lprev('${c.id}')" aria-label="${c.name}の借入額"><div class="lp" id="lp-${c.id}"></div><button class="btn" style="width:100%" onclick="apply('${c.id}')">この金額で申し込む</button>`
+  :`<div class="lp">${pend?'審査中です。結果が出るまでお待ちください。':'この会社の融資枠は使い切っています。'}</div>`}</div>`}
+function loginView(){
+  if(!SUPABASE.url||!SUPABASE.key)return `<div class="card"><h2>Supabase の設定が必要です</h2><div class="demo">bank.html の先頭付近にある <b>const SUPABASE={url:'',key:''}</b> に、Supabase の Project URL と anon public key を入れてください。</div></div>`;
+  return `<div class="card"><h2>口座をひらく</h2><p class="mut">はじめての方はこちら。口座番号と引き継ぎコードが発行されます。</p>
+  ${loginErr?`<div class="demo">${esc(loginErr)}</div>`:''}
+  <label class="lab" for="cn">口座名義（任意・12文字まで）</label><input id="cn" maxlength="12" placeholder="ニックネーム">
+  <button class="btn" style="width:100%;margin-top:12px" onclick="doCreate()">口座を開設する</button></div>
+  <div class="card"><h2>引き継ぎコードで入る</h2><p class="mut">別の端末で使うときや、ブラウザのデータを消した後はこちら。</p>
+  <label class="lab" for="cc">引き継ぎコード</label><input id="cc" placeholder="123456-xxxxxxxx…" autocomplete="off">
+  <button class="btn alt" style="width:100%;margin-top:12px" onclick="doImport()">この口座に入る</button></div>`}
+const views={
+acct(){return `<div class="card"><h2>入出金</h2><p class="mut">手持ちチップはカジノと共通です。預金に移すと、投資・定期預金・振込に使えます。預金⇔手持ちの移動に手数料はかかりません。</p>
+  <div class="two"><div><span class="lab">手持ち（カジノ）</span><b class="amt" data-w></b></div><div><span class="lab">預金</span><b class="amt">${fmt(S.dep)}</b></div></div>
+  <label class="lab" for="${bigOk()?'man':'ma'}">金額${bigOk()?'（1〜9999 と単位）':''}</label>${amtField('ma','例：500')}
+  <div class="qs"><button class="q" onclick="setV('#ma',100)">100</button><button class="q" onclick="setV('#ma',500)">500</button><button class="q" onclick="setV('#ma',1000)">1000</button><button class="q" onclick="setV('#ma',Math.max(0,wallet()))">手持ち全部</button><button class="q" onclick="setV('#ma',S.dep>0n?S.dep:0n)">預金全部</button></div>
+  <div class="btns"><button class="btn" onclick="doIn()">預金に入金</button><button class="btn alt" onclick="doOut()">手持ちへ出金</button></div></div>
+  <div class="card"><h2>通帳</h2>${ledger()}</div>
+  <div class="card"><h2>お知らせ</h2>${S.notices.slice(0,8).map(n=>`<div class="notice ${n.k}"><time>${fmtD(n.t)}</time><span>${esc(n.m)}</span></div>`).join('')||'<p class="mut">お知らせはありません。</p>'}</div>`},
+inv(){const d=SYMS.find(x=>x.id==ui.sel);
+  return `<div class="syms">${SYMS.map(x=>`<button class="sym${x.id==ui.sel?' on':''}" onclick="selSym('${x.id}')" aria-pressed="${x.id==ui.sel}"><span class="tk">${x.id}</span><b>${x.name}</b><span class="pr" data-pr="${x.id}"></span><span class="chg" data-chg="${x.id}"></span><span class="spark" data-sp="${x.id}"></span></button>`).join('')}</div>
+  <div class="card"><div class="ch-h"><div><h2>${d.name} <small>${d.id}</small>${d.ln?` <small>👑 リーダー：${esc(d.ln)}</small>`:''}${+d.dv>0?` <small>💰 配当 ${(+d.dv).toLocaleString('ja-JP')}／株（毎日）</small>`:''}</h2><span class="mut">${d.sub}（${d.tag}）</span></div><div><div class="amt" data-pr="${d.id}"></div><span class="chg" data-chg="${d.id}"></span></div></div>
+  <div id="chart"></div><p class="mut">直近のチャート（点線は期間の最初の値）。株価はサーバーで動いていて、全員に同じ値が見えます。ページを閉じている間も動き続けます。</p>
+  <div id="hinfo"></div>
+  <label class="lab" for="qty">株数</label><input id="qty" type="number" inputmode="numeric" min="1" step="1" value="1" oninput="qtyPrev()">
+  <div class="qs"><button class="q" onclick="setV('#qty',1)">1</button><button class="q" onclick="setV('#qty',10)">10</button><button class="q" onclick="setV('#qty',100)">100</button><button class="q" onclick="setV('#qty',maxBuy())">買える最大</button><button class="q" onclick="setV('#qty',H(ui.sel).q)">全部売る</button></div>
+  <div id="qc"></div><div class="btns"><button class="btn buy" onclick="buy()">買う</button><button class="btn sell" onclick="sell()">売る</button></div>
+  <p class="mut" style="margin-top:8px">売買には預金を使います（預金残高 ${fmt(S.dep)}）。</p></div>${mgCard()}`},
+fix(){
+  return `<div class="card"><h2>定期預金</h2><p class="mut">預けた時間のあいだは引き出せません。ロックが長いほど利率が上がります。</p>
+  <div class="ladder">${[[1,1],[10,1],[1,60],[6,60],[24,60]].map(([v,u])=>{const m=v*u;return `<button class="q" onclick="fdSet(${v},${u})">${fmtMin(m)}<small>+${rateFor(m)}%</small></button>`}).join('')}</div>
+  <label class="lab" for="fa">預ける金額（預金残高 ${fmt(S.dep)}）</label><input id="fa" type="number" inputmode="numeric" min="10" step="1" placeholder="10以上" oninput="fdPrev()">
+  <label class="lab" for="fv">ロックする時間</label><div class="dur"><input id="fv" type="number" inputmode="numeric" min="1" value="10" oninput="fdPrev()" aria-label="時間の数値"><select id="fu" onchange="fdPrev()" aria-label="単位"><option value="1" selected>分</option><option value="60">時間</option><option value="1440">日</option></select></div>
+  <div id="fp"></div><button class="btn" style="width:100%;margin-top:10px" onclick="fdOpen()">定期預金を始める</button></div>
+  <div class="card"><h2>預けている定期預金</h2>${S.fixed.map(f=>`<div class="item"><div class="top"><b class="amt">${fmt(f.amt)}</b><span class="lock">🔒 ロック中</span></div>
+    <div class="mut">${fmtMin(f.mins)} ／ 利率 ${f.rate}% ／ 満期受取 ${fmt(f.amt+f.int)}</div>
+    <div class="prog"><i data-prog="${f.start},${f.end}"></i></div><div class="mut">満期まで <b data-cd="${f.end}"></b>（${fmtDate(f.end)}）</div></div>`).join('')||'<p class="mut">定期預金はありません。</p>'}</div>`},
+tx(){return `<div class="card"><h2>自分の口座</h2><div class="acno">${S.acct}</div>
+  <label class="lab" for="nm">口座名義（相手に表示されます）</label><input id="nm" maxlength="12" value="${esc(S.name)}" placeholder="ニックネーム" onchange="setName(this.value)"></div>
+  <div class="card"><h2>振込</h2>
+  <label class="lab" for="tt">相手の口座番号（6桁）</label><input id="tt" inputmode="numeric" maxlength="6" placeholder="123456" oninput="lkPrev()"><div id="tn" class="mut"></div>
+  <label class="lab" for="${bigOk()?'tan':'ta'}">金額（預金残高 ${fmt(S.dep)}）${bigOk()?'　1〜9999 と単位':''}</label>${amtField('ta','例：300')}
+  <label class="lab" for="tm">メモ（任意）</label><input id="tm" maxlength="30" placeholder="ありがとう">
+  <button class="btn" style="width:100%;margin-top:12px" onclick="doTx()">振り込む</button></div>
+  <div class="card"><h2>振込履歴</h2>${S.tx.map(x=>`<div class="tx-i"><div><b>${x.dir=='out'?'→ ':'← '}${esc(x.peer_name||'')}</b> <span class="mut">${x.peer}</span> <span class="mut">${esc(x.memo)}</span><br><span class="mut">${fmtDate(x.t)}</span></div><div><b class="amt" style="font-size:18px">${x.dir=='out'?'−':'+'}${fmt(x.a)}</b> <span class="st sent">${x.dir=='out'?'送金':'受取'}</span></div></div>`).join('')||'<p class="mut">振込の履歴はありません。</p>'}</div>
+  <div class="card"><h2>引き継ぎコード</h2><p class="mut">別の端末やブラウザで同じ口座を使うための合言葉です。<b>他人に教えないでください</b>（知られると、その人がこの口座を操作できます）。</p>
+  <div class="btns"><button class="btn" onclick="copyCode()">コードをコピー</button><button class="btn alt" onclick="logout()">この端末から外す</button></div></div>`},
+lv(){
+  if(!LV)return `<div class="card"><h2>レベル</h2><p class="mut">読み込み中…</p></div>`;
+  const top=LV.top||[];
+  return `<div class="card"><h2>あなたのレベル</h2>
+  <div class="lvbig"><b>Lv.${fmt(LV.level)}</b><span class="ttl">${esc(lvTitle(lvN()))}</span><span class="mut">${LV.rank?`現在 ${fmt(LV.rank)}位`:'ランキング圏外（まだ寄付していません）'}</span></div>
+  <div class="prog"><i style="width:${LV.pct}%"></i></div>
+  <div class="mut">現在のレベルの進捗 ${LV.pct}%（100%で次のレベル）</div>
+  <p class="mut" style="margin-top:8px">1000兆チップを寄付するとレベルが1上がります（レベルの上限なし）。何回かに分けて寄付してもOK。寄付は預金から引かれ、戻りません。</p>
+  <label class="lab" for="da">寄付する金額（預金残高 ${fmt(S.dep)}）</label>
+  <input id="da" type="number" inputmode="numeric" min="1" step="1" placeholder="例：1000000000000000（1000兆）">
+  <div class="qs"><button class="q" onclick="setV('#da',${UNIT})">1000兆（1レベル分）</button><button class="q" onclick="setV('#da',S.dep>0n?S.dep:0n)">預金全部</button></div>
+  <div class="btns"><button class="btn" onclick="doDonate()">寄付する</button><button class="btn alt" onclick="fetchLv()">ランキング更新</button></div></div>
+  ${lvRewards()}
+  <div class="card"><h2>レベルランキング <small>TOP10</small></h2>
+  ${top.length?`<div class="rk h"><span style="text-align:center">順位</span><span>名前</span><span style="text-align:right">レベル</span><span style="text-align:right">進捗</span></div>`
+    +top.map(t=>`<div class="rk${t.me?' me':''}"><span class="r">${['👑','🥈','🥉'][t.rank-1]||t.rank}</span><span class="n">${esc(t.name)}${t.me?'（あなた）':''} <small class="ttl">${esc(lvTitle(Math.max(0,Math.floor(Number(t.lv))||0)))}</small></span><span class="l">Lv.${fmt(t.lv)}</span><span class="p">${t.pct}%</span></div>`).join('')
+    :'<p class="mut">まだ誰も寄付していません。最初のランクインを目指しましょう。</p>'}</div>`},
+msg(){
+  if(MSG===null&&!mBusy)fetchMsg();
+  const L=MSG||[];
+  return `<div class="card"><h2>運営とのメッセージ <small>運営だけに届きます</small></h2>
+  <p class="mut">ご意見・不具合・お問い合わせを運営に送れます。運営からのお知らせや返信もここに届きます（ユーザー同士のメッセージはできません）。<b>秘密コードや合言葉は送らないでください。</b></p>
+  ${MSG===null?'<p class="mut">読み込み中…</p>':`<div class="mw" id="mw">${L.length?L.map(m=>`<div class="mb ${m.dir}${mNew.has(m.id)?' n':''}">${m.dir=='a'?`<b>${esc(m.subject||'運営からのお知らせ')}</b>`:''}${esc(m.body)}<small>${m.dir=='a'?'運営':'あなた'} ・ ${fmtDate(m.t)}${mNew.has(m.id)?' ・ 新着':''}</small></div>`).join(''):'<p class="mut">まだメッセージはありません。</p>'}</div>`}
+  <label class="lab" for="mt">運営へのメッセージ（500文字まで）</label>
+  <textarea id="mt" maxlength="500" placeholder="メッセージを入力"></textarea>
+  <div class="btns"><button class="btn" onclick="msgSend()">運営に送信</button><button class="btn alt" onclick="fetchMsg()">更新</button></div></div>`},
+loan(){return `<div class="card"><h2>信用スコア</h2><div class="cs"><b>${S.credit}</b><div class="bar"><i style="width:${S.credit}%"></i></div></div>
+  <p class="mut" style="margin-top:8px">期限内の返済で上がり、延滞や否決で下がります。高いほど審査に通りやすくなります。</p></div>
+  ${S.loans.length?`<div class="card"><h2>借入中</h2>${S.loans.map(l=>`<div class="row-l"><div><b>${CO(l.co).name}</b> <span class="mut">借入 ${fmt(l.amt)}</span></div><div>返済額 <b class="amt" data-owed="${l.id}"></b></div><div class="due" data-due="${l.id}"></div><button class="btn s" style="justify-self:start" onclick="repay('${l.id}')">全額返済</button></div>`).join('')}</div>`:''}
+  ${S.apps.length?`<div class="card"><h2>審査中</h2>${S.apps.map(a=>`<div class="item"><div class="top"><b>${CO(a.co).name}</b><b class="amt" style="font-size:18px">${fmt(a.amt)}</b></div><div class="prog"><i data-prog="${a.start},${a.end}"></i></div><div class="mut">結果まで <b data-cd="${a.end}"></b></div></div>`).join('')}</div>`:''}
+  <h2 class="sec">融資会社を選ぶ</h2>${LOANS.map(coCard).join('')}`}
+};
+function render(){
+  const tabs=$('#tabs'),v=$('#view');
+  if(!S){tabs.style.display='none';v.innerHTML=loginView();updateLive();return}
+  tabs.style.display='';
+  // 入力途中の値とフォーカスを保つ
+  const keep={};v.querySelectorAll('input,select,textarea').forEach(e=>{if(e.id)keep[e.id]=e.value});const mw0=$('#mw'),ms0=mw0?(mw0.scrollHeight-mw0.scrollTop-mw0.clientHeight<40?-1:mw0.scrollTop):-1;
+  const fid=document.activeElement&&v.contains(document.activeElement)?document.activeElement.id:null;
+  if(!views[ui.tab])ui.tab='acct';
+  v.innerHTML=views[ui.tab]();
+  for(const id in keep){const e=document.getElementById(id);if(e)e.value=keep[id]}
+  if(fid){const e=document.getElementById(fid);if(e){e.focus();try{const n=e.value.length;e.setSelectionRange(n,n)}catch(_){}}}
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t==ui.tab));
+  amtRest('ma');amtRest('ta');
+  if(ui.tab=='fix')fdPrev();
+  if(ui.tab=='loan')LOANS.forEach(c=>lprev(c.id));
+  if(ui.tab=='inv'){qtyPrev();mgPrev()}
+  if(ui.tab=='msg'){const w=$('#mw');if(w)w.scrollTop=ms0<0?w.scrollHeight:ms0}
+  updateLive();
+}
+/* ============ 運営とのメッセージ ============ */
+let MSG=null,mUn=0,mBusy=false,mNew=new Set();
+function updBadge(){const e=$('#mbdg');if(!e)return;e.textContent=mUn>99?'99+':mUn;e.style.display=mUn>0&&ui.tab!='msg'?'inline-block':'none'}
+async function fetchMsg(){
+  if(!A||mBusy)return;mBusy=true;
+  try{
+    const r=await rpc('bank_msg_list',{p_acct:A.acct,p_secret:A.secret}),L=r.items||[];
+    mNew=new Set(L.filter(m=>m.dir=='a'&&!m.read).map(m=>m.id));MSG=L;mUn=mNew.size;
+    if(S&&ui.tab=='msg'){render();if(mNew.size)rpc('bank_msg_read',{p_acct:A.acct,p_secret:A.secret}).then(()=>{mUn=0;updBadge()}).catch(()=>{})}
+    updBadge();
+  }catch(e){if(MSG===null)MSG=[];if(ui.tab=='msg')toast(e.message,'err')}finally{mBusy=false}
+}
+async function pollMsgCount(){   // 他のタブにいる間は、未読の数だけを軽く確認する
+  if(!A||mBusy)return;
+  try{const n=await rpc('bank_msg_unread',{p_acct:A.acct,p_secret:A.secret});mUn=Math.max(0,Math.floor(+n)||0);updBadge()}catch(e){}
+}
+async function msgSend(){
+  const e=$('#mt'),b=e?e.value.trim():'';
+  if(!b)return toast('メッセージを入力してください','err');
+  if(b.length>500)return toast('500文字以内で入力してください','err');
+  if(busy)return;busy=true;
+  try{await rpc('bank_msg_send',{p_acct:A.acct,p_secret:A.secret,p_body:b});e.value='';busy=false;toast('運営に送信しました','ok');await fetchMsg()}
+  catch(x){toast(x.message,'err')}finally{busy=false}
+}
+
+/* ============ レベル ============ */
+let LV=null,lvBusy=false;
+const UNIT=1e15;   // 1レベルに必要な寄付額（1000兆）
+function lvSave(){try{localStorage.setItem('cj_bank_lv',String(lvN()))}catch(e){}}   // カジノが通信料の割引に使う
+function lvRewards(){const l=lvN(),nx=s=>(Math.floor(l/s)+1)*s,
+  lim=mgLimitAt(l),wt=mgWaitAt(l),fe=feeAt(l),
+  nl=lim>=1e13?'最大':`次はLv.${fmt(nx(100))}で ${fmt(mgLimitAt(nx(100)))}`,
+  nw=wt<=10?'最短':`次はLv.${fmt(nx(500))}で ${mgWaitAt(nx(500))}秒`,
+  nf=fe<=.1?'最小':`次はLv.${fmt(nx(1000))}で ${feeAt(nx(1000))}％`;
+  return `<div class="card"><h2>レベル報酬 <small>称号：${esc(lvTitle(l))}</small></h2>
+  <div class="facts"><span>信用・空売りの建玉上限</span><b>${fmt(lim)}</b><span class="mut" style="grid-column:1/3;margin-top:-4px">Lv100ごとに+100億（最大10兆）／${nl}</span>
+  <span>決済・再建玉の待ち時間</span><b>${wt}秒</b><span class="mut" style="grid-column:1/3;margin-top:-4px">Lv500ごとに-10秒（最短10秒）／${nw}</span>
+  <span>カジノのオンライン対戦の通信料</span><b>${fe}％</b><span class="mut" style="grid-column:1/3;margin-top:-4px">Lv1000ごとに-0.1％（最小0.1％）／${nf}</span></div></div>`}
+async function fetchLv(){
+  if(!A||lvBusy)return;lvBusy=true;
+  try{LV=await rpc('bank_level_get',{p_acct:A.acct,p_secret:A.secret});lvSave();if(S&&(ui.tab=='lv'||ui.tab=='inv'||ui.tab=='acct'||ui.tab=='tx'))render()}
+  catch(e){toast(e.message,'err')}finally{lvBusy=false}
+}
+async function doDonate(){
+  const a=num('#da');if(a<1)return toast('寄付する金額を入力してください','err');
+  if(a>S.dep)return toast('預金残高が足りません','err');
+  const r=await act('bank_donate',{p_amount:a},r=>r.up>0?`🏅 レベルが${fmt(r.up)}上がりました！ Lv.${fmt(r.level)}`:`寄付しました（Lv.${fmt(r.level)}・進捗${r.pct}%）`);
+  if(r.ok){LV=r.r;lvSave();render()}
+}
+function setTab(t){ui.tab=t;saveUi();if(S){render();syncHist();if(t=='inv')pollMk();if(t=='lv')fetchLv();if(t=='msg')fetchMsg();updBadge()}window.scrollTo(0,0)}
+let lvAsk=false;
+function setFmt(v){ui.fmt=(v=='j'||v=='e')?v:'c';saveUi();render();updateLive()}
+function fmtUi(){const e=$('#fmtsel');if(!e)return;
+  if(S&&!LV&&!lvBusy&&!lvAsk){lvAsk=true;fetchLv()}   // レベルがまだ分からないときは1回だけ取得
+  const ok=!!S&&fmtOk();e.hidden=!ok;if(ok&&e.value!=(ui.fmt||'c'))e.value=ui.fmt||'c'}
+function updateLive(){
+  fmtUi();
+  const w=wallet();$('#s-w').textContent=fmt(w);
+  if(!S){['#s-d','#s-i','#s-f','#s-l','#net'].forEach(s=>$(s).textContent='—');$('#acct').textContent=A?A.acct:'------';$('#link').textContent='口座未開設';return}
+  const t=now(),iv=invV(),fv=fixV(),lv=loanV(t),r=wRaw();
+  $('#s-d').textContent=fmt(S.dep);$('#s-i').textContent=fmt(iv);$('#s-f').textContent=fmt(fv);$('#s-l').textContent=fmt(lv);
+  $('#net').textContent=fmt(BI(w)+S.dep+iv+fv-BI(lv));$('#acct').textContent=S.acct;
+  if(r&&r.src=='casino'){try{localStorage.setItem('cj_linked','1')}catch(e){}}
+  let lk=false;try{lk=!!localStorage.getItem('cj_linked')}catch(e){}
+  $('#link').textContent=(lk||(r&&r.src=='casino'))?'カジノと連携中':'カジノ未連携（カジノを一度開くと連携）';
+  document.querySelectorAll('[data-w]').forEach(e=>e.textContent=fmt(w));
+  document.querySelectorAll('[data-cd]').forEach(e=>{const x=+e.dataset.cd-t;e.textContent=x>0?fmtDur(x):'まもなく'});
+  document.querySelectorAll('[data-prog]').forEach(e=>{const[a,b]=e.dataset.prog.split(',').map(Number);e.style.width=clamp((t-a)/(b-a),0,1)*100+'%'});
+  document.querySelectorAll('[data-owed]').forEach(e=>{const l=S.loans.find(x=>x.id==e.dataset.owed);if(l)e.textContent=fmt(owed(l,t))});
+  document.querySelectorAll('[data-due]').forEach(e=>{const l=S.loans.find(x=>x.id==e.dataset.due);if(!l)return;const x=l.due-t;e.textContent=x>0?'期限まで '+fmtDur(x):'延滞中 '+fmtDur(-x)+'（延滞金が増加中）';e.classList.toggle('bad',x<=0)});
+  if(ui.tab=='inv'&&$('#chart')){
+    SYMS.forEach(d=>{const m=MK[d.id];if(!m)return;const c=m.h[0]?(m.p-m.h[0])/Math.abs(m.h[0]):0;
+      document.querySelectorAll(`[data-pr="${d.id}"]`).forEach(e=>e.textContent=m.p.toFixed(1));
+      document.querySelectorAll(`[data-chg="${d.id}"]`).forEach(e=>{e.textContent=(c>=0?'▲ +':'▼ −')+Math.abs(c*100).toFixed(2)+'%';e.className='chg '+(c>=0?'up':'dn')});
+      const sp=document.querySelector(`[data-sp="${d.id}"]`);if(sp)sp.innerHTML=spark(m.h)});
+    if(MK[ui.sel])$('#chart').innerHTML=chartSVG(MK[ui.sel].h);
+    $('#hinfo').innerHTML=hinfo();mgLive();
+  }
+}
+
+/* ============ 実行 ============ */
+let cnt=0;
+function due(){const t=now();return S.fixed.some(f=>t>=f.end)||S.apps.some(a=>t>=a.end)||S.loans.some(l=>!l.od&&t>l.due)}
+/* 更新の頻度：通帳など=10秒ごと／投資タブ=株価3秒ごと＋状態9秒ごと（建玉があれば6秒）。
+   2分間さわらなかったら止めて、さわったらすぐ再開する。 */
+let quietN=0,lastSg='',lastMkT=0;
+const IDLE=60000;let lastAct=Date.now(),idleOn=false;
+function onAct(){
+  const was=Date.now()-lastAct>IDLE;lastAct=Date.now();
+  if(was&&S&&!document.hidden){idleOn=false;refresh(ui.tab=='inv')}
+}
+['pointerdown','pointermove','keydown','touchstart','wheel','scroll'].forEach(ev=>addEventListener(ev,onAct,{passive:true,capture:true}));
+setInterval(()=>{
+  if(document.hidden||!S)return;
+  if(Date.now()-lastAct>IDLE){if(!idleOn){idleOn=true;toast('操作がないため更新を止めました。画面にふれると再開します')}return}
+  cnt++;updateLive();
+  // ログ量対策：通信の間隔を長く。状態に変化がないときは最大4倍まで間隔を延ばす（変化があれば元に戻る）
+  const inv=ui.tab=='inv',ev=(inv?(S.margin&&S.margin.length?15:30):45)*1000*(1+quietN),n=Date.now(),
+        st=(due()&&n-lastFetch>5000)||n-lastFetch>=ev,    // 満期・審査結果・延滞はサーバーが処理
+        mk=inv&&n-lastMkT>=12000;
+  if(mk)lastMkT=n;
+  if(ui.tab=='msg'&&cnt%60==0)fetchMsg();else if(ui.tab!='msg'&&cnt%600==0)pollMsgCount();
+  if(st)refresh(mk);else if(mk)pollMk();                     // 同時に来たら1回の通信にまとめる
+},1000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S){lastAct=Date.now();idleOn=false;refresh(ui.tab=='inv')}});
+addEventListener('storage',e=>{if(e.key==WK)updateLive()});
+addEventListener('pageshow',()=>{if(S)updateLive()});
+render();
+if(A){refresh();pollMsgCount()}
+</script>
+<script>/* 3D tab entrance (visual only; wraps setTab) */
+(()=>{if(typeof setTab!=='function'||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+const orig=setTab;let tm;
+window.setTab=function(t){const r=orig.apply(this,arguments);const v=document.getElementById('view');
+ if(v){v.classList.remove('enter');void v.offsetWidth;v.classList.add('enter');clearTimeout(tm);tm=setTimeout(()=>v.classList.remove('enter'),900)}return r};
+})();
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>/* ===== JX 3D BUILDING ENGINE (Three.js r128) ===== */
+(function(){const T=window.THREE;window.JX={ok:!!T};if(!T)return;
+const E=u=>u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2,S=(u,a,b)=>{u=Math.min(1,Math.max(0,(u-a)/(b-a)));return u*u*(3-2*u)};
+const tex=(w,h,f)=>{const c=document.createElement('canvas');c.width=w;c.height=h;f(c.getContext('2d'),w,h);const t=new T.CanvasTexture(c);t.anisotropy=4;return t};
+const radial=col=>tex(128,128,g=>{const r=g.createRadialGradient(64,64,0,64,64,64);r.addColorStop(0,col);r.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=r;g.fillRect(0,0,128,128)});
+const add=(m)=>{m.blending=T.AdditiveBlending;m.depthWrite=false;m.transparent=true;return m};
+JX.make=async function(c,cv){
+try{await Promise.race([document.fonts.load('800 80px "Shippori Mincho"'),new Promise(r=>setTimeout(r,1500))])}catch(e){}
+const R=new T.WebGLRenderer({canvas:cv,antialias:true});R.setPixelRatio(Math.min(devicePixelRatio||1,1.75));
+const sc=new T.Scene();sc.background=new T.Color(c.sky);sc.fog=new T.FogExp2(c.sky,.026);
+const cam=new T.PerspectiveCamera(55,1,.1,140);
+const M=(col,o)=>new T.MeshStandardMaterial(Object.assign({color:col,roughness:.7,metalness:.1},o||{}));
+const B=(w,h,d,m,x,y,z)=>{const o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.position.set(x,y,z);sc.add(o);return o};
+const spr=(col,s,x,y,z,op)=>{const o=new T.Sprite(add(new T.SpriteMaterial({map:radial(col),opacity:op==null?1:op})));o.scale.set(s,s,1);o.position.set(x,y,z);sc.add(o);return o};
+const flat=(col,s,x,z)=>{const o=new T.Mesh(new T.PlaneGeometry(s,s),add(new T.MeshBasicMaterial({map:radial(col)})));o.rotation.x=-Math.PI/2;o.position.set(x,.16,z);sc.add(o)};
+const bank=c.type=='bank',H=9,OH=3.8;
+sc.add(new T.AmbientLight(c.amb,.95));const moon=new T.DirectionalLight(c.moon,.65);moon.position.set(-6,12,9);sc.add(moon);
+/* street */
+B(90,.2,90,M(0x0b0b11,{roughness:.2,metalness:.6}),0,-.1,0);B(34,.24,13,M(c.walk,{roughness:.5}),0,0,6.4);
+(c.puddle||[]).forEach((p,i)=>flat(p,9,-9+i*9,10+i%2*4));
+/* body: left/right/top blocks leave a door opening into a lit corridor */
+const wm=M(c.wall,{roughness:c.wr});
+B(5.8,H,8,wm,-4.8,H/2,-4);B(5.8,H,8,wm,4.8,H/2,-4);B(3.8,H-OH,8,wm,0,OH+(H-OH)/2,-4);B(15.4,H,2,wm,0,H/2,-9);
+B(3.8,.1,8,M(c.carpet),0,.07,-4);
+const back=new T.Mesh(new T.PlaneGeometry(3.8,OH),new T.MeshBasicMaterial({map:tex(64,256,(g,w,h)=>{const r=g.createLinearGradient(0,0,0,h);r.addColorStop(0,'#fff3c4');r.addColorStop(1,'#ffb454');g.fillStyle=r;g.fillRect(0,0,w,h)})}));back.position.set(0,OH/2,-7.9);sc.add(back);
+const inL=new T.PointLight(0xffc873,0,16);inL.position.set(0,3,-3);sc.add(inL);
+/* windows */
+const wg=new T.InstancedMesh(new T.PlaneGeometry(bank?.9:1.15,bank?2.2:1.0),new T.MeshBasicMaterial(),18),m4=new T.Matrix4(),cc=new T.Color();let n=0;
+for(const sx of[-1,1])for(let i=0;i<3;i++)for(let j=0;j<(bank?2:3);j++){m4.setPosition(sx*(2.9+i*1.6),bank?3.6+j*3.1:4.9+j*1.45,.02);wg.setMatrixAt(n,m4);wg.setColorAt(n,cc.set(Math.random()<.7?c.win:c.win2).multiplyScalar(.55+Math.random()*.45));n++}
+wg.count=n;sc.add(wg);
+/* sign */
+const sg=tex(1600,300,(g,w,h)=>{let fs=150;g.font='800 '+fs+'px "Shippori Mincho",serif';const tw=g.measureText(c.text[0]).width;fs*=Math.min(1,1450/tw);g.font='800 '+fs+'px "Shippori Mincho",serif';g.textAlign='center';g.textBaseline='middle';
+ const gr=g.createLinearGradient(0,40,0,220);gr.addColorStop(0,'#fff7c2');gr.addColorStop(.5,'#f6d24a');gr.addColorStop(1,'#a67c14');g.shadowColor=c.neonCss;g.shadowBlur=36;g.lineWidth=10;g.strokeStyle='#3a2606';g.strokeText(c.text[0],w/2,125);g.fillStyle=gr;g.fillText(c.text[0],w/2,125);
+ g.shadowBlur=0;g.font='700 46px Georgia,serif';g.fillStyle='#f6e27a';g.fillText(c.text[1].split('').join(' '),w/2,252)});
+const sy=bank?6.85:7.6,sz=bank?3.45:.06;
+const sign=new T.Mesh(new T.PlaneGeometry(bank?9.6:11.6,bank?1.8:2.2),new T.MeshBasicMaterial({map:sg,transparent:true}));sign.position.set(0,sy,sz);sc.add(sign);
+const sglow=spr(c.glow,bank?14:20,0,sy,sz+.4,.55);
+const bulbs=[],bm=()=>new T.MeshBasicMaterial({color:0xffe6a0});
+if(bank){const st=M(c.wall,{roughness:.9});
+ B(15.6,.1,5,st,0,.17,2.5);
+ for(const x of[-6.5,-4.7,-3,3,4.7,6.5]){const k=new T.Mesh(new T.CylinderGeometry(.42,.46,6.3,18),M(0xe3e6ee,{roughness:.55}));k.position.set(x,3.3,2);sc.add(k);B(1.1,.25,1.1,st,x,.3,2);B(1.1,.25,1.1,st,x,6.5,2)}
+ B(16.4,.9,3.6,st,0,7,1.8);
+ const sh=new T.Shape();sh.moveTo(-8.2,0);sh.lineTo(8.2,0);sh.lineTo(0,2.5);sh.closePath();const pd=new T.Mesh(new T.ExtrudeGeometry(sh,{depth:3.6,bevelEnabled:false}),st);pd.position.set(0,7.45,0);sc.add(pd);
+ var clk=new T.Mesh(new T.CircleGeometry(.85,40),new T.MeshBasicMaterial({color:0xfff7dc}));clk.position.set(0,8.55,3.62);sc.add(clk);
+ var hh=new T.Mesh(new T.BoxGeometry(.07,.55,.02),new T.MeshBasicMaterial({color:0x222}));hh.geometry.translate(0,.27,0);hh.position.set(0,8.55,3.64);sc.add(hh);
+ var mh=hh.clone();mh.geometry=new T.BoxGeometry(.05,.75,.02).translate(0,.37,0);sc.add(mh);
+}else{
+ B(6.4,.28,3.2,M(0x1a0c20),0,4.35,1.6);const gm=M(c.acc,{metalness:.8,roughness:.3});B(6.6,.12,.12,gm,0,4.5,3.2);
+ for(let i=0;i<22;i++){const a=i<13?[-3.1+i*.5167,4.2,3.2]:[(i%2?3.1:-3.1),4.2,.3+((i-13)>>1)*.7];const b=new T.Mesh(new T.SphereGeometry(.1,10,8),bm());b.position.set(a[0],a[1],a[2]);sc.add(b);bulbs.push(b)}
+}
+/* doors */
+const dm=M(c.acc,{metalness:.85,roughness:.28}),gl=new T.MeshStandardMaterial({color:0x101830,roughness:.1,metalness:.9,transparent:true,opacity:.55,emissive:0x1a2a5a}),lv=[];
+for(const s of[-1,1]){const p=new T.Group();p.position.set(s*1.9,.12,.05);const lw=1.88,lh=OH-.15;
+ for(const[w,h,x,y]of[[lw,.14,0,lh-.07],[lw,.14,0,.07],[.14,lh,-.87,lh/2],[.14,lh,.87,lh/2],[.1,lh,0,lh/2]]){const o=new T.Mesh(new T.BoxGeometry(w,h,.12),dm);o.position.set(s*-.94+x,y,0);p.add(o)}
+ const g=new T.Mesh(new T.PlaneGeometry(lw-.2,lh-.3),gl);g.position.set(-s*.94,lh/2,0);p.add(g);const hd=new T.Mesh(new T.CylinderGeometry(.05,.05,.7,8),dm);hd.position.set(-s*.2,1.3,.12);p.add(hd);sc.add(p);lv.push([p,s])}
+/* carpet, stanchions, lamps, symbols, sparkles */
+B(3,.05,15,M(c.carpet,{roughness:.9}),0,.15,8);
+for(let z=2;z<=13;z+=2.75)for(const x of[-1.8,1.8]){const p=new T.Mesh(new T.CylinderGeometry(.05,.07,1,8),dm);p.position.set(x,.65,z);sc.add(p);const b=new T.Mesh(new T.SphereGeometry(.1,10,8),dm);b.position.set(x,1.15,z);sc.add(b)}
+for(const x of[-9,9]){const p=new T.Mesh(new T.CylinderGeometry(.08,.12,5,8),M(0x15151c));p.position.set(x,2.5,6);sc.add(p);B(.5,.3,.5,new T.MeshBasicMaterial({color:0xffe2a0}),x,5.1,6);spr('rgba(255,210,130,.9)',5,x,5.1,6,.8);const l=new T.PointLight(0xffd699,.9,22);l.position.set(x,4.8,6.5);sc.add(l)}
+const syms=c.syms.map((s,i)=>{const o=new T.Sprite(new T.SpriteMaterial({map:tex(128,128,(g,w,h)=>{g.font='900 100px Georgia,serif';g.textAlign='center';g.textBaseline='middle';g.shadowColor=s[1];g.shadowBlur=26;g.fillStyle=s[1];g.fillText(s[0],64,70)}),transparent:true,depthWrite:false}));o.scale.set(2.4,2.4,1);o.position.set(i%2?-10.5:10.5,3+i*1.1,2+i);o.userData.y=o.position.y;sc.add(o);return o});
+const N=170,pg=new T.BufferGeometry(),pp=new Float32Array(N*3);for(let i=0;i<N;i++){pp[i*3]=(Math.random()-.5)*30;pp[i*3+1]=Math.random()*10;pp[i*3+2]=Math.random()*20-3}
+pg.setAttribute('position',new T.BufferAttribute(pp,3));sc.add(new T.Points(pg,add(new T.PointsMaterial({color:c.acc,size:.09,sizeAttenuation:true}))));
+/* loop */
+let on=false,raf,u=0,dir=0,dur=3,cb=null,tt=0,last=0,px=0,py=0;const fl=c.flash;
+addEventListener('pointermove',e=>{px=e.clientX/innerWidth*2-1;py=e.clientY/innerHeight*2-1},{passive:true});
+function rs(){const w=cv.clientWidth,h=cv.clientHeight;if(!w||!h)return;R.setSize(w,h,false);cam.aspect=w/h;cam.fov=w/h<.8?72:55;cam.updateProjectionMatrix()}addEventListener('resize',rs);
+function anim(){const e=E(u),k=1-e;
+ cam.position.set(Math.sin(tt*.22)*2.6*k+px*1.4*k,2.4-.8*e-py*.3*k,15.5-17.2*e);cam.lookAt(px*.8*k,3.3-1.7*e,-2-6*e);
+ const o=S(e,.42,.76)*1.75;for(const[p,s]of lv)p.rotation.y=s*o;
+ inL.intensity=.5+S(e,.25,.9)*2.4;sglow.material.opacity=.5+.12*Math.sin(tt*3);
+ bulbs.forEach((b,i)=>{const v=((i-tt*9)%4+4)%4<2;b.material.color.setHex(v?0xfff0b0:0x5a4010)});
+ syms.forEach((s,i)=>{s.position.y=s.userData.y+Math.sin(tt*1.2+i*1.7)*.45});
+ if(bank){const d=new Date();hh.rotation.z=-(d.getHours()%12+d.getMinutes()/60)*Math.PI/6;mh.rotation.z=-d.getMinutes()*Math.PI/30}
+ const a=pg.attributes.position.array;for(let i=0;i<N;i++){a[i*3+1]+=.004;if(a[i*3+1]>10)a[i*3+1]=0;a[i*3]+=Math.sin(tt+i)*.0015}pg.attributes.position.needsUpdate=true;
+ if(fl&&dir){fl.style.transition='none';fl.style.opacity=S(e,.86,1)}}
+function frame(ts){if(!on)return;raf=requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/1000||0);last=ts;tt+=dt;
+ if(dir){u+=dir*dt/dur;if(dir>0&&u>=1||dir<0&&u<=0){u=dir>0?1:0;if(fl)fl.style.opacity=dir>0?1:0;dir=0;const f=cb;cb=null;f&&f()}}anim();R.render(sc,cam)}
+return{start(){if(on)return;on=true;rs();last=performance.now();raf=requestAnimationFrame(frame)},stop(){on=false;cancelAnimationFrame(raf)},
+ enter(f,d){u=0;dir=1;dur=d||3.4;cb=f},exit(f,d){u=1;dir=-1;dur=d||3.2;cb=f},rs,get u(){return u}}};
+/* ===== INTERIORS ===== */
+const MS=(col,o)=>new T.MeshStandardMaterial(Object.assign({color:col,roughness:.6,metalness:.15},o||{}));
+const wrap=x=>((x+Math.PI)%(2*Math.PI)+2*Math.PI)%(2*Math.PI)-Math.PI;
+const lbl=(t,col)=>{const o=new T.Sprite(new T.SpriteMaterial({map:tex(512,128,(g,w,h)=>{g.font='800 54px "Shippori Mincho",serif';g.textAlign='center';g.textBaseline='middle';g.shadowColor=col;g.shadowBlur=18;g.lineWidth=8;g.strokeStyle='#1a1004';g.strokeText(t,w/2,64);g.fillStyle='#ffe89a';g.fillText(t,w/2,64)}),transparent:true}));o.scale.set(4,1,1);return o};
+JX.floor=async function(c,cv){
+ const R=new T.WebGLRenderer({canvas:cv,antialias:true});R.setPixelRatio(Math.min(devicePixelRatio||1,1.6));
+ const sc=new T.Scene();sc.background=new T.Color(0x07040c);sc.fog=new T.FogExp2(0x07040c,.03);const cam=new T.PerspectiveCamera(62,1,.1,90);
+ const gold=MS(0xf0c040,{metalness:.9,roughness:.25}),felt=col=>MS(col,{roughness:.9,metalness:0}),bas=col=>new T.MeshBasicMaterial({color:col});
+ sc.add(new T.AmbientLight(0x7a6a9a,1.05));const pl=new T.PointLight(0xffd9a0,1.2,34);pl.position.set(0,6.5,0);sc.add(pl);
+ const spot=new T.SpotLight(0xfff0c0,2.6,24,.45,.6,1);sc.add(spot,spot.target);
+ const ft=tex(256,256,(g,w,h)=>{g.fillStyle='#3a0a14';g.fillRect(0,0,w,h);g.strokeStyle='#c9a032';g.lineWidth=4;for(const k of[1,.5]){g.beginPath();g.moveTo(w/2,h/2*(1-k));g.lineTo(w/2*(1+k),h/2);g.lineTo(w/2,h/2*(1+k));g.lineTo(w/2*(1-k),h/2);g.closePath();g.stroke()}});ft.wrapS=ft.wrapT=T.RepeatWrapping;ft.repeat.set(12,12);
+ const fl=new T.Mesh(new T.CircleGeometry(19,64),new T.MeshStandardMaterial({map:ft,roughness:.35,metalness:.3}));fl.rotation.x=-Math.PI/2;sc.add(fl);
+ sc.add(new T.Mesh(new T.SphereGeometry(32,24,12),new T.MeshBasicMaterial({color:0x140a22,side:T.BackSide})));
+ for(const[r,col]of[[6.2,0xff2a6d],[13.5,0xf6c940]]){const t=new T.Mesh(new T.TorusGeometry(r,.07,6,96),bas(col));t.rotation.x=Math.PI/2;t.position.y=.04;sc.add(t)}
+ const items=c.items,N=items.length,RR=9.6,sp=[],ST=[];
+ for(let i=0;i<N;i++){const a=(i+.5)*2*Math.PI/N,x=Math.sin(a)*12.6,z=-Math.cos(a)*12.6,p=new T.Mesh(new T.CylinderGeometry(.45,.5,7,14),gold);p.position.set(x,3.5,z);sc.add(p);const s=new T.Sprite(add(new T.SpriteMaterial({map:radial('rgba(255,200,90,.9)')})));s.scale.set(4,4,1);s.position.set(x,6.6,z);sc.add(s)}
+ for(let i=0;i<12;i++){const a=i*Math.PI/6,m=new T.Mesh(new T.SphereGeometry(.18,10,8),bas(0xffe2a0));m.position.set(Math.sin(a)*5,7.4,-Math.cos(a)*5);sc.add(m);const s=new T.Sprite(add(new T.SpriteMaterial({map:radial('rgba(255,220,140,.8)')})));s.scale.set(2.2,2.2,1);s.position.copy(m.position);sc.add(s)}
+ const tbl=(col,r)=>{const g=new T.Group(),t=new T.Mesh(new T.CylinderGeometry(r,r,.14,40),felt(col));t.position.y=.95;const rim=new T.Mesh(new T.TorusGeometry(r,.12,10,40),MS(0x3a1d0a));rim.rotation.x=Math.PI/2;rim.position.y=1.02;const pd=new T.Mesh(new T.CylinderGeometry(.35,.6,.9,16),gold);pd.position.y=.45;const rg=new T.Mesh(new T.TorusGeometry(r*.6,.025,6,40),bas(0xf6e27a));rg.rotation.x=Math.PI/2;rg.position.y=1.03;g.add(t,rim,pd,rg);return g};
+ const chips=(g,x,z,n,col)=>{for(let i=0;i<n;i++){const m=new T.Mesh(new T.CylinderGeometry(.14,.14,.05,16),MS(i%2?0xffffff:col));m.position.set(x,1.06+i*.056,z);g.add(m)}};
+ const card=(g,x,z,r)=>{const m=new T.Mesh(new T.PlaneGeometry(.3,.42),new T.MeshBasicMaterial({color:0xfffdf2,side:2}));m.rotation.set(-Math.PI/2,0,r);m.position.set(x,1.04,z);g.add(m)};
+ const scr=(w,h,f)=>new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({map:tex(256,Math.round(256*h/w),f)}));
+ const build=k=>{const g=new T.Group();let ly=3.4;
+  if(k=='bj'||k=='bc'||k=='pk'||k=='hl'){g.add(tbl(k=='bc'?0x8a1020:k=='pk'?0x123a7a:0x0f6b3e,k=='pk'?1.75:1.55));chips(g,-.5,.3,6,0xd03030);chips(g,.5,.5,4,0x3060d0);card(g,-.25,-.4,.3);card(g,.1,-.4,-.2);card(g,.5,-.1,.5);if(k=='hl'){const b=new T.Mesh(new T.PlaneGeometry(.8,1.12),new T.MeshBasicMaterial({color:0xfffdf2,side:2}));b.position.set(0,1.75,-.2);g.add(b)}}
+  else if(k=='ch'){g.add(tbl(0x0f6b3e,1.4));const bw=new T.Mesh(new T.SphereGeometry(.6,20,12,0,Math.PI*2,Math.PI/2,Math.PI/2),MS(0x8a1020,{side:2}));bw.position.y=1.5;g.add(bw);for(let i=0;i<3;i++){const d=new T.Mesh(new T.BoxGeometry(.22,.22,.22),bas(0xffffff));d.position.set(-.3+i*.3,1.3,0);g.add(d);sp.push(d)}}
+  else if(k=='ru'){g.add(tbl(0x7a1020,1.6));const pie=tex(256,256,(q,w,h)=>{for(let i=0;i<24;i++){q.fillStyle=i==0?'#118a4a':i%2?'#c01828':'#111';q.beginPath();q.moveTo(128,128);q.arc(128,128,128,i*Math.PI/12,(i+1)*Math.PI/12);q.fill()}});const w=new T.Mesh(new T.CylinderGeometry(.9,.9,.12,36),[MS(0x3a1d0a),new T.MeshBasicMaterial({map:pie}),MS(0x3a1d0a)]);w.position.y=1.12;g.add(w);sp.push(w)}
+  else if(k=='sl'){ly=3.2;for(const x of[-.6,.6]){const b=new T.Mesh(new T.BoxGeometry(1,2.2,.9),MS(0x2a1040,{metalness:.5}));b.position.set(x,1.1,0);const s=scr(.8,.5,(q,w,h)=>{q.fillStyle='#fff6d0';q.fillRect(0,0,w,h);q.font='900 90px Georgia';q.textAlign='center';q.fillStyle='#d01020';q.fillText('7 7 7',w/2,h*.72)});s.position.set(x,1.5,.46);const m=new T.Mesh(new T.BoxGeometry(1,.25,.95),bas(0xff3a8a));m.position.set(x,2.3,0);g.add(b,s,m)}}
+  else if(k=='hr'){ly=4.1;const f=new T.Mesh(new T.BoxGeometry(3.6,2.4,.15),gold);f.position.y=2.2;const s=scr(3.3,2.1,(q,w,h)=>{q.fillStyle='#1a6a2a';q.fillRect(0,0,w,h);for(let i=0;i<5;i++){q.strokeStyle='#fff8';q.lineWidth=3;q.beginPath();q.ellipse(w/2,h/2,w*.4-i*14,h*.38-i*10,0,0,7);q.stroke()}q.font='900 34px Georgia';q.fillStyle='#fff';q.textAlign='center';q.fillText('DERBY',w/2,h/2+10)});s.position.set(0,2.2,.09);const pd=new T.Mesh(new T.CylinderGeometry(1.2,1.4,.5,24),gold);pd.position.y=.25;g.add(f,s,pd)}
+  else if(k=='cr'){const t=new T.Mesh(new T.BoxGeometry(3.4,.14,1.5),felt(0x0f6b3e));t.position.y=.95;g.add(t);for(const z of[-.8,.8]){const r=new T.Mesh(new T.BoxGeometry(3.6,.25,.16),MS(0x3a1d0a));r.position.set(0,1.05,z);g.add(r)}for(const x of[-1.4,1.4]){const p=new T.Mesh(new T.BoxGeometry(.5,.9,1.2),gold);p.position.set(x,.45,0);g.add(p)}for(let i=0;i<2;i++){const d=new T.Mesh(new T.BoxGeometry(.2,.2,.2),bas(0xffffff));d.position.set(-.2+i*.4,1.15,0);g.add(d);sp.push(d)}}
+  else if(k=='vp'){ly=4.6;for(const x of[-1.3,1.3]){const p=new T.Mesh(new T.CylinderGeometry(.2,.2,3.8,12),gold);p.position.set(x,1.9,0);g.add(p)}const lt=new T.Mesh(new T.BoxGeometry(3.2,.4,.4),gold);lt.position.y=3.9;const cu=new T.Mesh(new T.PlaneGeometry(2.4,3.6),new T.MeshStandardMaterial({color:0x8a0c1c,side:2,roughness:.9}));cu.position.y=1.85;g.add(lt,cu)}
+  else{ly=3.6;const gs=new T.Mesh(new T.CylinderGeometry(.9,.9,2.6,24),new T.MeshStandardMaterial({color:0x66ddff,transparent:true,opacity:.22,roughness:.1}));gs.position.y=1.3;const di=new T.Mesh(new T.OctahedronGeometry(.6),bas(0x7af0ff));di.position.y=1.4;const pd=new T.Mesh(new T.CylinderGeometry(1.1,1.2,.3,24),gold);pd.position.y=.15;g.add(gs,di,pd,Object.assign(new T.Sprite(add(new T.SpriteMaterial({map:radial('rgba(120,240,255,.9)')}))),{}));g.children[3].scale.set(3.5,3.5,1);g.children[3].position.y=1.4;sp.push(di)}
+  return[g,ly]};
+ items.forEach((it,i)=>{const a=i*2*Math.PI/N,[g,ly]=build(it[0]),h=new T.Group();h.position.set(Math.sin(a)*RR,0,-Math.cos(a)*RR);h.add(g);const l=lbl(it[1],'#ffb400');l.position.y=ly;h.add(l);const f=new T.Mesh(new T.CircleGeometry(2.4,32),add(new T.MeshBasicMaterial({map:radial('rgba(255,190,80,.55)')})));f.rotation.x=-Math.PI/2;f.position.y=.05;h.add(f);h.lookAt(0,0,0);sc.add(h);ST.push(h)});
+ let on=false,raf,last=0,tt=0,yc=0,mode='idle',tgt=0,d=0,cb=null;const ang=i=>i*2*Math.PI/N;
+ function frame(ts){if(!on)return;raf=requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/1000||0);last=ts;tt+=dt;
+  if(mode=='idle')yc+=dt*.09;else yc+=wrap(ang(tgt)-yc)*(1-Math.exp(-dt*5));
+  d+=((mode=='enter'?1:0)-d)*(1-Math.exp(-dt*(mode=='enter'?3.4:2)));
+  if(mode=='enter'&&d>.96&&cb){const f=cb;cb=null;f()}
+  const sx=Math.sin(yc),cz=-Math.cos(yc),ds=d*5.2;cam.position.set(sx*ds,1.75-.3*d+Math.sin(tt*.8)*.04,cz*ds);cam.lookAt(sx*RR,1.25+.2*(1-d),cz*RR);cam.fov=64-9*d;cam.updateProjectionMatrix();
+  const i=((Math.round(yc/(2*Math.PI/N))%N)+N)%N;spot.position.set(Math.sin(ang(i))*RR*.5,9,-Math.cos(ang(i))*RR*.5);spot.target.position.set(Math.sin(ang(i))*RR,1,-Math.cos(ang(i))*RR);
+  for(const o of sp){o.rotation.y+=dt*1.4;o.rotation.x+=dt*.9}R.render(sc,cam)}
+ function rs(){const w=cv.clientWidth,h=cv.clientHeight;if(!w||!h)return;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}addEventListener('resize',rs);
+ return{start(){if(on)return;on=true;rs();last=performance.now();raf=requestAnimationFrame(frame)},stop(){on=false;cancelAnimationFrame(raf)},rs,look(i){if(mode!='enter'){mode='look';tgt=i}},release(){mode='idle';cb=null},enter(i,f){mode='enter';tgt=i;cb=f}}};
+JX.hall=async function(c,cv){
+ const R=new T.WebGLRenderer({canvas:cv,antialias:true});R.setPixelRatio(Math.min(devicePixelRatio||1,1.25));
+ const sc=new T.Scene();sc.background=new T.Color(0x0a1a38);sc.fog=new T.FogExp2(0x0a1a38,.022);const cam=new T.PerspectiveCamera(58,1,.1,100);
+ const gold=MS(0xe8c24a,{metalness:.9,roughness:.25}),steel=MS(0x9aa6b8,{metalness:.95,roughness:.28}),stone=MS(0xd8dce6,{roughness:.8});
+ sc.add(new T.AmbientLight(0x8aa0d0,1.1));const pl=new T.PointLight(0xffe2a0,1.5,45);pl.position.set(0,8,-6);sc.add(pl);const sl=new T.PointLight(0xfff0c0,1.6,24);sl.position.set(0,4,-11);sc.add(sl);
+ const ft=tex(128,128,(g,w,h)=>{g.fillStyle='#e9ecf2';g.fillRect(0,0,w,h);g.fillStyle='#8a94a8';g.fillRect(0,0,w/2,h/2);g.fillRect(w/2,h/2,w/2,h/2)});ft.wrapS=ft.wrapT=T.RepeatWrapping;ft.repeat.set(14,14);
+ const fl=new T.Mesh(new T.PlaneGeometry(70,70),new T.MeshStandardMaterial({map:ft,roughness:.22,metalness:.35}));fl.rotation.x=-Math.PI/2;sc.add(fl);
+ const bk=new T.Mesh(new T.BoxGeometry(44,16,1),stone);bk.position.set(0,8,-16.5);sc.add(bk);
+ const vg=new T.Group();vg.position.set(0,4.4,-15.7);sc.add(vg);
+ const ring=new T.Mesh(new T.TorusGeometry(3.7,.5,16,56),steel);const dr=new T.Mesh(new T.CylinderGeometry(3.3,3.3,.7,48),steel);dr.rotation.x=Math.PI/2;vg.add(ring,dr);
+ const r2=new T.Mesh(new T.TorusGeometry(2.4,.12,10,48),gold);r2.position.z=.4;vg.add(r2);
+ for(let i=0;i<14;i++){const a=i*Math.PI*2/14,b=new T.Mesh(new T.CylinderGeometry(.14,.14,.3,10),gold);b.rotation.x=Math.PI/2;b.position.set(Math.cos(a)*3,Math.sin(a)*3,.4);vg.add(b)}
+ const wh=new T.Group();wh.position.z=.6;for(let i=0;i<3;i++){const s=new T.Mesh(new T.BoxGeometry(.2,3.4,.2),gold);s.rotation.z=i*Math.PI/3;wh.add(s)}const hb=new T.Mesh(new T.SphereGeometry(.45,16,12),gold);wh.add(hb);vg.add(wh);
+ for(let i=0;i<6;i++)for(const sx of[-1,1]){const z=-2-i*2.8,p=new T.Mesh(new T.CylinderGeometry(.55,.62,10,18),stone);p.position.set(sx*7.5,5,z);sc.add(p);const cap=new T.Mesh(new T.BoxGeometry(1.5,.4,1.5),gold);cap.position.set(sx*7.5,10,z);sc.add(cap)}
+ for(const sx of[-1,1]){const w=new T.Mesh(new T.BoxGeometry(5.5,1.2,1.3),MS(0x4a2c14,{roughness:.5}));w.position.set(sx*4.4,.6,-9);sc.add(w);const tp=new T.Mesh(new T.BoxGeometry(5.7,.12,1.5),gold);tp.position.set(sx*4.4,1.25,-9);sc.add(tp);const lm=new T.Mesh(new T.CylinderGeometry(.22,.3,.4,12),new T.MeshBasicMaterial({color:0x3aff9c}));lm.position.set(sx*4.4,1.5,-9);sc.add(lm)}
+ for(let i=0;i<8;i++){const st=new T.Mesh(new T.CylinderGeometry(.4,.4,.14+(i%3)*.12,16),gold);st.position.set(-2.6+i*.75,.1,-13);sc.add(st)}
+ const sg=new T.Sprite(add(new T.SpriteMaterial({map:radial('rgba(255,220,120,.9)')})));sg.scale.set(14,14,1);sg.position.set(0,4.4,-14);sc.add(sg);
+ for(let i=0;i<4;i++){const ch=new T.Mesh(new T.TorusGeometry(1.2-i*.2,.05,8,32),gold);ch.rotation.x=Math.PI/2;ch.position.set(0,8.6-i*.15,-4-i*3);sc.add(ch);const s=sg.clone();s.scale.set(5,5,1);s.position.copy(ch.position);sc.add(s)}
+ const N=120,pg=new T.BufferGeometry(),pp=new Float32Array(N*3);for(let i=0;i<N;i++){pp[i*3]=(Math.random()-.5)*26;pp[i*3+1]=Math.random()*9;pp[i*3+2]=-Math.random()*16+4}pg.setAttribute('position',new T.BufferAttribute(pp,3));sc.add(new T.Points(pg,add(new T.PointsMaterial({color:0xffe08a,size:.08}))));
+ const PS=[[[0,3,9],[0,4,-15]],[[0,3.6,-5],[0,4.3,-15]],[[-5.5,2.2,0],[4,1.8,-9]],[[6,4.6,4],[-2,3,-12]]],cp=new T.Vector3(0,3,9),cl=new T.Vector3(0,4,-15),tp=new T.Vector3(),tl=new T.Vector3();let k=0,on=false,raf,last=0,tt=0;
+ function frame(ts){if(!on)return;raf=requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/1000||0);last=ts;tt+=dt;const a=1-Math.exp(-dt*1.6);
+  tp.set(...PS[k][0]);tl.set(...PS[k][1]);cp.lerp(tp,a);cl.lerp(tl,a);cam.position.set(cp.x+Math.sin(tt*.2)*.7,cp.y+Math.sin(tt*.31)*.15,cp.z);cam.lookAt(cl);wh.rotation.z+=dt*.25;sg.material.opacity=.7+.1*Math.sin(tt*2);
+  const q=pg.attributes.position.array;for(let i=0;i<N;i++){q[i*3+1]+=.004;if(q[i*3+1]>9)q[i*3+1]=0}pg.attributes.position.needsUpdate=true;R.render(sc,cam)}
+ function rs(){const w=cv.clientWidth,h=cv.clientHeight;if(!w||!h)return;R.setSize(w,h,false);cam.aspect=w/h;cam.fov=w/h<.8?72:58;cam.updateProjectionMatrix()}addEventListener('resize',rs);
+ const st={start(){if(on)return;on=true;rs();last=performance.now();raf=requestAnimationFrame(frame)},stop(){on=false;cancelAnimationFrame(raf)},rs,pose(i){k=((i%4)+4)%4}};
+ document.addEventListener('visibilitychange',()=>document.hidden?st.stop():st.start());return st};
+
+})();
+
+/* bank glue */
+(()=>{const G=document.getElementById('gate'),FL=document.getElementById('flash'),RM=matchMedia('(prefers-reduced-motion:reduce)').matches;let P=null;
+const cfg={type:'bank',flash:FL,sky:0x0a1a38,amb:0x6a7fa8,moon:0xaec4ff,wall:0xc9cfdb,wr:.85,walk:0x4a5568,carpet:0x14305e,acc:0xe8c24a,glow:'rgba(255,220,120,.7)',neonCss:'#ffd76a',text:['2−1 情報処理銀行','JOHO BANK'],win:0xffe9a8,win2:0x3a4a6a,puddle:['rgba(255,220,120,.4)','rgba(120,170,255,.4)'],syms:[['¥','#f6e27a'],['$','#f6e27a'],['¥','#f6e27a'],['円','#f6e27a']]};
+const sc=()=>P||(P=window.JX&&JX.ok?JX.make(cfg,document.getElementById('gl3d')):Promise.reject());
+const hide=()=>{G.style.display='none'};
+if(G.style.display==='block'){setTimeout(hide,9000);
+ sc().then(s=>{s.start();s.enter(()=>{G.style.transition='opacity 1.1s';G.style.opacity=0;setTimeout(()=>{hide();s.stop()},1200)},RM?.5:3.2)}).catch(hide)}
+document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[href="./"]');if(!a)return;e.preventDefault();
+ const go=()=>{try{sessionStorage.setItem('jx_walk','1')}catch(_){}location.href='./'};
+ sc().then(s=>{G.style.transition='none';G.style.opacity=1;FL.style.transition='none';FL.style.opacity=1;G.style.display='block';s.start();s.exit(go,RM?.5:3)}).catch(go)});
+})();
+</script>
+<script>/* bank hall glue */
+(()=>{if(!(window.JX&&JX.ok))return;const G=document.getElementById('gate'),H=s=>{let a=0;for(const c of String(s))a+=c.charCodeAt(0);return a};
+ JX.hall({},document.getElementById('glh')).then(h=>{document.body.classList.add('g3h');
+  setTimeout(()=>h.start(),G&&G.style.display==='block'?3800:0);
+  const o=window.setTab;window.setTab=function(t){h.pose(H(t));return o.apply(this,arguments)};
+  try{h.pose(H(ui.tab))}catch(e){}}).catch(e=>console.warn('hall off',e))})();
+</script>
+</body></html>
