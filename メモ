@@ -1,10 +1,4 @@
-indexのほう
-casino-test/:1912 Uncaught SyntaxError: Identifier 'FL' has already been declared (at casino-test/:1912:9)
-casino-test/:329 Uncaught ReferenceError: enterCasino is not defined
-    at HTMLButtonElement.onclick (casino-test/:329:59)
-casino-test/:329 Uncaught ReferenceError: enterCasino is not defined
-    at HTMLButtonElement.onclick (casino-test/:329:59)
-
-bankも、ドア開けて中に入るまでは良かったけど
-入った後の銀行の様子も緻密に再現してほしい
-ここの部分のこと（提供画像）
+シックポーと銀行、SVIPルームの見た目が四角が動いてるだけの変なのになってる
+SVIPは天国と地獄をモチーフに
+銀行はbank.htmlの銀行外観を参考にして
+他のゲームもthree化お願い
