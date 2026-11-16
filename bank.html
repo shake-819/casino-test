@@ -215,6 +215,11 @@ input[type=range]{box-shadow:none}
 html{background:#0a1a38}#glh{position:fixed;inset:0;width:100%;height:100%;z-index:-2;display:none}
 body.g3h{background:none!important}body.g3h #glh{display:block}
 body.g3h::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,#08142ebb 0,#0a1a3898 38%,#0a1a38e8 100%)}
+.bk3{position:relative;height:clamp(210px,34vh,330px);margin:2px 0 16px;border-radius:18px;overflow:hidden;border:2px solid transparent;background:#050b18 padding-box,linear-gradient(135deg,#fff3b8,#d4af37 45%,#7a5a10) border-box;box-shadow:0 14px 34px #000b,inset 0 0 40px #0008}
+.bk3 canvas{display:block;width:100%;height:100%;touch-action:pan-y}
+.bk3t{position:absolute;left:12px;bottom:10px;display:flex;align-items:center;gap:10px;padding:5px 14px;border-radius:999px;background:#050b18cc;border:1px solid #e8c24a88;color:#f6e27a;font-family:var(--mj);font-weight:800;font-size:13px;letter-spacing:.06em;text-shadow:0 1px 4px #000;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.bk3t b{color:#ff4d5e;font-family:var(--gt);font-size:11px;animation:bk3b 1.2s infinite}
+@keyframes bk3b{50%{opacity:.3}}
 </style></head>
 <body>
 <div id="gate" style="display:none"><canvas id="gl3d"></canvas><div id="flash"></div></div>
@@ -1090,5 +1095,153 @@ document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest
   setTimeout(()=>h.start(),G&&G.style.display==='block'?3800:0);
   const o=window.setTab;window.setTab=function(t){h.pose(H(t));return o.apply(this,arguments)};
   try{h.pose(H(ui.tab))}catch(e){}}).catch(e=>console.warn('hall off',e))})();
+</script>
+<script>
+/* ===== BK3: bank scenes (Three.js). One 3D banner per tab, above the page content; the bank logic is untouched.
+   投資 = trading floor: video wall fed by the live prices (MK / SYMS / ui.sel), LED ticker, traders at their PCs.
+   Any failure hides only the banner. ===== */
+window.BK3=(function(){
+const T=window.THREE;if(!T)return{};
+const PI=Math.PI,TAU=PI*2,JP='"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif';
+const app=document.getElementById('app'),view=document.getElementById('view');if(!app||!view)return{};
+const host=document.createElement('div');host.id='bk3';host.className='bk3';host.innerHTML='<canvas></canvas><div class="bk3t"></div>';app.insertBefore(host,view);
+const cv=host.querySelector('canvas'),tag=host.querySelector('.bk3t');
+let R;try{R=new T.WebGLRenderer({canvas:cv,antialias:true});R.setPixelRatio(Math.min(devicePixelRatio||1,1.5))}catch(e){host.style.display='none';return{}}
+const cvs=(w,h,f)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');f&&f(g,w,h);const t=new T.CanvasTexture(c);t.anisotropy=4;t.userData={g,w,h};return t};
+const radial=col=>cvs(128,128,g=>{const r=g.createRadialGradient(64,64,0,64,64,64);r.addColorStop(0,col);r.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=r;g.fillRect(0,0,128,128)});
+const rc={},rad=c=>rc[c]||(rc[c]=radial(c));
+const M=(c,o)=>new T.MeshStandardMaterial(Object.assign({color:c,roughness:.6,metalness:.1},o||{})),B=c=>new T.MeshBasicMaterial({color:c});
+const mesh=(g,m,x,y,z,p)=>{const o=new T.Mesh(g,m);o.position.set(x,y,z);p&&p.add(o);return o};
+const glowS=(col,sz,x,y,z,p)=>{const s=new T.Sprite(new T.SpriteMaterial({map:rad(col),blending:T.AdditiveBlending,depthWrite:false,transparent:true}));s.scale.set(sz,sz,1);s.position.set(x,y,z);s.raycast=()=>{};p.add(s);return s};
+const txt=(t,fs,col,w,h,glowc)=>{const s=new T.Sprite(new T.SpriteMaterial({map:cvs(w||512,h||110,(g,W,H)=>{g.font='900 '+fs+'px '+JP;g.textAlign='center';g.textBaseline='middle';if(glowc){g.shadowColor=glowc;g.shadowBlur=18}g.lineWidth=8;g.strokeStyle='#05080f';g.strokeText(t,W/2,H/2);g.fillStyle=col;g.fillText(t,W/2,H/2)}),transparent:true,depthTest:false}));s.raycast=()=>{};return s};
+const gold=M(0xe8c24a,{metalness:.9,roughness:.25}),steel=M(0x9aa6b8,{metalness:.95,roughness:.28});
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+function base(bg,fog){const sc=new T.Scene();sc.background=new T.Color(bg);sc.fog=new T.FogExp2(bg,fog||.02);sc.add(new T.AmbientLight(0x8090c0,.9));return sc}
+function floor(sc,c1,c2,sz,rep,rough){const t=cvs(128,128,(g,w,h)=>{g.fillStyle=c1;g.fillRect(0,0,w,h);g.fillStyle=c2;g.fillRect(0,0,w/2,h/2);g.fillRect(w/2,h/2,w/2,h/2)});t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(rep,rep);const f=mesh(new T.PlaneGeometry(sz,sz),M(0xffffff,{map:t,roughness:rough||.3,metalness:.35}),0,0,0,sc);f.rotation.x=-PI/2;return f}
+/* ---- people ---- */
+const SK=[0xf1c9a5,0xe0ac82,0xc68a62,0x8d5a3b],SU=[0x1c2438,0x2a2f3a,0x3b2a2a,0x24323a,0x45454f],HR=[0x15110e,0x3a2a1c,0x6a4a2a,0x222222,0x888888],TI=[0xc62839,0x1f6fd1,0xd4af37,0x1b7f4b];
+function person(o){o=o||{};const g=new T.Group(),suit=M(o.suit||rnd(SU),{roughness:.75}),skin=M(o.skin||rnd(SK),{roughness:.8}),st=!!o.stand;
+ if(!st){mesh(new T.BoxGeometry(.58,.08,.55),M(0x20242c),0,.5,0,g);mesh(new T.BoxGeometry(.58,.62,.07),M(0x20242c),0,.88,.3,g);mesh(new T.CylinderGeometry(.04,.04,.45,6),M(0x555a66),0,.25,0,g)}
+ const ty=st?1.15:.95,hy=st?1.63:1.43;
+ mesh(new T.BoxGeometry(.5,.62,.3),suit,0,ty,0,g);mesh(new T.BoxGeometry(.07,.32,.02),M(o.tie||rnd(TI)),0,ty-.03,-.16,g);
+ const head=mesh(new T.SphereGeometry(.17,14,12),skin,0,hy,0,g);mesh(new T.SphereGeometry(.18,14,10,0,TAU,0,PI*.5),M(o.hair||rnd(HR),{roughness:.9}),0,hy+.02,.01,g);
+ if(st)[-.12,.12].forEach(x=>mesh(new T.BoxGeometry(.18,.82,.2),suit,x,.41,0,g));else[-.12,.12].forEach(x=>{mesh(new T.BoxGeometry(.18,.12,.55),suit,x,.58,-.2,g);mesh(new T.BoxGeometry(.16,.5,.16),suit,x,.3,-.45,g)});
+ const arm=sx=>{const p=new T.Group();p.position.set(sx*.32,st?1.4:1.2,0);g.add(p);mesh(new T.BoxGeometry(.11,.55,.11),suit,0,-.27,0,p);mesh(new T.SphereGeometry(.065,8,6),skin,0,-.57,0,p);return p};
+ return{g,head,aL:arm(-1),aR:arm(1),ph:Math.random()*6,cheer:0,st}}
+/* ---- trading floor data ---- */
+const demo=['情報処理','カジノ','銀行','ゲーム','チップ','ジャック'].map((n,i)=>({id:'D'+i,name:n,p:1000*(i+1),h:Array.from({length:60},(_,k)=>1000*(i+1)*(1+Math.sin(k/6+i)*.03)),chg:0}));
+function feed(){const L=[];try{if(typeof SYMS!=='undefined'&&SYMS.length&&typeof MK!=='undefined')SYMS.forEach(d=>{const m=MK[d.id];if(m&&m.h&&m.h.length){const h=m.h.map(Number);L.push({id:d.id,name:d.name,p:+m.p,h,chg:h[0]?(+m.p-h[0])/Math.abs(h[0]):0})}})}catch(e){}
+ if(L.length)return L;demo.forEach(d=>{const l=d.h[d.h.length-1]*(1+(Math.random()-.5)*.012);d.h.push(l);d.h.shift();d.p=l;d.chg=(l-d.h[0])/d.h[0]});return demo}
+const U=[[1e20,'垓'],[1e16,'京'],[1e12,'兆'],[1e8,'億'],[1e4,'万']];
+const jp=n=>{n=+n;if(!isFinite(n))return'—';const a=Math.abs(n);for(const[u,s]of U)if(a>=u){const v=n/u;return(Math.abs(v)<100?v.toFixed(2):v.toFixed(0))+s}return a<100?n.toFixed(2):Math.round(n).toLocaleString('ja-JP')};
+const CU='#ff4d5e',CD='#4d9bff',CF='#cfd8ea',cc=c=>c>0.00005?CU:c<-0.00005?CD:CF,pc=c=>(c>=0?'+':'')+(c*100).toFixed(2)+'%';
+function drawMain(g,w,h,d,t){g.fillStyle='#04101f';g.fillRect(0,0,w,h);g.strokeStyle='#12263f';g.lineWidth=1;for(let i=1;i<8;i++){g.beginPath();g.moveTo(0,h*.38+i*(h*.6)/8);g.lineTo(w,h*.38+i*(h*.6)/8);g.stroke()}
+ const col=cc(d.chg);g.textBaseline='alphabetic';g.fillStyle='#9fb4d8';g.font='700 40px '+JP;g.fillText(d.name+'  '+d.id,36,64);g.fillStyle=col;g.font='900 104px '+JP;g.fillText(jp(d.p),36,176);g.font='800 48px '+JP;g.fillText((d.chg>=0?'▲ ':'▼ ')+pc(d.chg),36,236);
+ const a=d.h.slice(-140),mn=Math.min(...a),mx=Math.max(...a),pd=(mx-mn)||Math.abs(mn)*.01||1,X=i=>40+i*(w-80)/Math.max(1,a.length-1),Y=v=>h-30-(v-mn)/pd*(h*.62-30);
+ const gr=g.createLinearGradient(0,h*.38,0,h);gr.addColorStop(0,col+'88');gr.addColorStop(1,col+'00');g.beginPath();g.moveTo(X(0),h-30);a.forEach((v,i)=>g.lineTo(X(i),Y(v)));g.lineTo(X(a.length-1),h-30);g.closePath();g.fillStyle=gr;g.fill();
+ g.beginPath();a.forEach((v,i)=>i?g.lineTo(X(i),Y(v)):g.moveTo(X(i),Y(v)));g.strokeStyle=col;g.lineWidth=5;g.stroke();const lx=X(a.length-1),ly=Y(a[a.length-1]);g.fillStyle='#fff';g.beginPath();g.arc(lx,ly,7+Math.sin(t*6)*2,0,TAU);g.fill();
+ g.fillStyle='#ff3b3b';g.beginPath();g.arc(w-150,48,9*(.7+.3*Math.sin(t*4)),0,TAU);g.fill();g.fillStyle='#fff';g.font='900 34px '+JP;g.fillText('LIVE',w-130,60)}
+function drawList(g,w,h,L,sel){g.fillStyle='#04101f';g.fillRect(0,0,w,h);g.fillStyle='#e8c24a';g.font='900 38px '+JP;g.textBaseline='alphabetic';g.fillText('銘柄一覧',24,50);const n=Math.min(L.length,8),rh=(h-76)/Math.max(n,1);
+ L.slice(0,n).forEach((d,i)=>{const y=76+i*rh;if(d.id===sel){g.fillStyle='#16315a';g.fillRect(8,y,w-16,rh-4)}g.fillStyle='#cfd8ea';g.font='800 '+Math.min(34,rh*.5)+'px '+JP;g.fillText(d.name.slice(0,7),24,y+rh*.62);g.textAlign='right';g.fillStyle=cc(d.chg);g.fillText(jp(d.p),w-190,y+rh*.62);g.fillText(pc(d.chg),w-24,y+rh*.62);g.textAlign='left'})}
+function drawHeat(g,w,h,L){g.fillStyle='#04101f';g.fillRect(0,0,w,h);g.fillStyle='#e8c24a';g.font='900 38px '+JP;g.textBaseline='alphabetic';g.fillText('騰落ヒートマップ',24,50);const n=Math.min(L.length,9),cols=3,rows=Math.ceil(n/cols),tw=(w-40)/cols,th=(h-80)/Math.max(rows,1);
+ L.slice(0,n).forEach((d,i)=>{const x=20+(i%cols)*tw,y=70+Math.floor(i/cols)*th,k=Math.min(1,Math.abs(d.chg)*14);g.fillStyle=d.chg>=0?`rgb(${60+k*170|0},${28},${40})`:`rgb(${28},${50+k*40|0},${70+k*150|0})`;g.fillRect(x+3,y+3,tw-6,th-6);g.fillStyle='#fff';g.textAlign='center';g.font='900 '+Math.min(34,th*.28)+'px '+JP;g.fillText(d.name.slice(0,5),x+tw/2,y+th*.45);g.font='800 '+Math.min(28,th*.22)+'px '+JP;g.fillText(pc(d.chg),x+tw/2,y+th*.75);g.textAlign='left'})}
+function drawTicker(g,w,h,L){g.fillStyle='#02060c';g.fillRect(0,0,w,h);g.textBaseline='middle';g.font='800 36px '+JP;let x=20;const src=L.length?L:demo;for(let k=0;k<2;k++)for(const d of src){const s=d.name+' '+jp(d.p)+' '+(d.chg>=0?'▲':'▼')+pc(d.chg);g.fillStyle=cc(d.chg);if(x<w)g.fillText(s,x,h/2+2);x+=g.measureText(s).width+60}}
+/* ================= scenes ================= */
+const BUILD={
+inv(){const sc=base(0x050a14,.017),cam=new T.PerspectiveCamera(48,2.4,.1,90),P={x:0,y:3.5,z:9.8,lx:0,ly:3.1,lz:-14};
+ sc.add(new T.PointLight(0xffe2b0,1.1,40).translateY(7.5));const bl=new T.PointLight(0x4a7aff,1.6,34);bl.position.set(0,5,-10);sc.add(bl);
+ floor(sc,'#0d1424','#141d33',44,22,.22);mesh(new T.BoxGeometry(44,16,.5),M(0x080e1c),0,8,-15.2,sc);
+ const tv=(w,h,x,y,z,ry,cw,ch)=>{const t=cvs(cw,ch),g=new T.Group();g.position.set(x,y,z);g.rotation.y=ry;sc.add(g);mesh(new T.BoxGeometry(w+.35,h+.35,.3),M(0x07090d,{metalness:.6,roughness:.4}),0,0,0,g);mesh(new T.PlaneGeometry(w,h),B(0xffffff),0,0,.17,g).material.map=t;glowS('rgba(90,150,255,.55)',w*1.7,0,0,-.4,g);return t};
+ const tM=tv(9.6,5.4,0,5.3,-14.6,0,1024,576),tL=tv(5.2,3.9,-8.6,4.9,-14.1,.38,640,480),tR=tv(5.2,3.9,8.6,4.9,-14.1,-.38,640,480);
+ const tk=cvs(2048,64);tk.wrapS=T.RepeatWrapping;mesh(new T.PlaneGeometry(22,.7),new T.MeshBasicMaterial({map:tk}),0,2.05,-14.6,sc);mesh(new T.BoxGeometry(22.3,.9,.2),M(0x07090d),0,2.05,-14.75,sc);
+ const sg=txt('情報処理証券  JOHO SECURITIES',64,'#ffe9a0',1100,130,'#ffb020');sg.scale.set(11,1.3,1);sg.position.set(0,8.7,-14.3);sc.add(sg);
+ /* monitors: a small pool of live mini-charts shared by all desks */
+ const pool=[0,1,2,3,4].map(i=>({t:cvs(160,96),d:Array.from({length:40},(_,k)=>50+Math.sin(k/4+i)*14),up:i%2==0}));
+ const stepPool=()=>pool.forEach(o=>{o.d.push(Math.max(10,Math.min(86,o.d[o.d.length-1]+(Math.random()-.5)*16)));o.d.shift();const g=o.t.userData.g;g.fillStyle='#06101e';g.fillRect(0,0,160,96);const c=o.d[o.d.length-1]>=o.d[0]?CU:CD;g.strokeStyle='#14304f';g.lineWidth=1;for(let y=16;y<96;y+=20){g.beginPath();g.moveTo(0,y);g.lineTo(160,y);g.stroke()}g.beginPath();o.d.forEach((v,k)=>k?g.lineTo(k*4,96-v):g.moveTo(0,96-v));g.strokeStyle=c;g.lineWidth=3;g.stroke();g.fillStyle=c;g.font='800 15px '+JP;g.fillText(o.d[o.d.length-1]>=o.d[0]?'▲':'▼',6,16);o.t.needsUpdate=true});stepPool();
+ const people=[];
+ [1.5,-1.8,-5.1,-8.4].forEach((z,r)=>[-5.4,-1.8,1.8,5.4].forEach((x,c)=>{const g=new T.Group();g.position.set(x,0,z);sc.add(g);
+  mesh(new T.BoxGeometry(1.7,.07,.8),M(0x2c2218,{roughness:.5}),0,.8,0,g);[[-.8,-.35],[.8,-.35],[-.8,.35],[.8,.35]].forEach(([a,b])=>mesh(new T.BoxGeometry(.06,.78,.06),M(0x15151a),a,.39,b,g));mesh(new T.BoxGeometry(.5,.025,.18),M(0x15151a),0,.85,.15,g);
+  [-.45,.45].forEach((mx,k)=>{mesh(new T.BoxGeometry(.05,.2,.05),M(0x15151a),mx,.95,-.2,g);mesh(new T.BoxGeometry(.74,.46,.04),M(0x08080c),mx,1.24,-.2,g);mesh(new T.PlaneGeometry(.68,.4),new T.MeshBasicMaterial({map:pool[(r*4+c+k)%pool.length].t}),mx,1.24,-.175,g)});
+  const p=person();p.g.position.set(x,0,z+.78);sc.add(p.g);people.push(p)}));
+ let acc=9,acc2=9,tickOff=0;
+ return{sc,cam,P,title:'📈 情報処理証券　トレーディングフロア<b>● LIVE</b>',upd(t,dt){acc+=dt;acc2+=dt;
+  if(acc>.45){acc=0;const L=feed(),sel=(typeof ui!=='undefined'&&ui.sel)||'',d=L.find(x=>x.id===sel)||L[0];if(d){drawMain(tM.userData.g,1024,576,d,t);tM.needsUpdate=true}drawList(tL.userData.g,640,480,L,d&&d.id);tL.needsUpdate=true;drawHeat(tR.userData.g,640,480,L);tR.needsUpdate=true;drawTicker(tk.userData.g,2048,64,L);tk.needsUpdate=true}
+  if(acc2>.7){acc2=0;stepPool()}tk.offset.x=(tk.offset.x+dt*.03)%1;
+  people.forEach((p,i)=>{p.cheer-=dt;if(p.cheer<-4&&Math.random()<dt*.04)p.cheer=1.6;const ch=p.cheer>0;
+   if(ch){p.aL.rotation.x=PI*.92+Math.sin(t*12+p.ph)*.25;p.aR.rotation.x=PI*.92+Math.sin(t*12+p.ph+1)*.25;p.head.position.y=1.5}
+   else{p.aL.rotation.x=1.15+Math.sin(t*13+p.ph)*.07;p.aR.rotation.x=1.15+Math.sin(t*11+p.ph*2)*.07;p.head.position.y=1.43+Math.sin(t*1.3+p.ph)*.01;p.head.rotation.y=Math.sin(t*.5+p.ph)*.25}})}}},
+acct(){const sc=base(0x0a1430,.02),cam=new T.PerspectiveCamera(48,2.4,.1,90),P={x:0,y:3.2,z:9.5,lx:0,ly:2.6,lz:-8};
+ sc.add(new T.PointLight(0xffe2a0,1.3,40).translateY(8));floor(sc,'#e9ecf2','#8a94a8',44,16,.2);mesh(new T.BoxGeometry(40,16,1),M(0xc9cfdb,{roughness:.8}),0,8,-12,sc);
+ for(const sx of[-1,1])for(let i=0;i<3;i++){mesh(new T.CylinderGeometry(.55,.62,10,18),M(0xd8dce6,{roughness:.8}),sx*8.5,5,-2-i*3,sc);mesh(new T.BoxGeometry(1.5,.4,1.5),gold,sx*8.5,10,-2-i*3,sc)}
+ mesh(new T.BoxGeometry(13,1.1,1.4),M(0x4a2c14,{roughness:.5}),0,.55,-4,sc);mesh(new T.BoxGeometry(13.3,.1,1.7),gold,0,1.15,-4,sc);mesh(new T.BoxGeometry(13,1.7,.05),new T.MeshStandardMaterial({color:0xaad0ff,transparent:true,opacity:.22,roughness:.1}),0,2,-4.7,sc);
+ const tel=[];[-4.2,0,4.2].forEach((x,i)=>{const p=person({stand:false});p.g.rotation.y=PI;p.g.position.set(x,0,-6);sc.add(p.g);tel.push(p);const s=txt((i+1)+'番窓',48,'#ffe9a0',256,90);s.scale.set(2,.7,1);s.position.set(x,4,-4.3);sc.add(s)});
+ const cus=[];[-4.4,-.4,4.1].forEach(x=>{const p=person({stand:true});p.g.position.set(x,0,-2);sc.add(p.g);cus.push(p)});
+ const nb=cvs(512,128);mesh(new T.BoxGeometry(5.6,1.5,.25),M(0x07090d),0,6.4,-8,sc);mesh(new T.PlaneGeometry(5.3,1.25),B(0xffffff),0,6.4,-7.86,sc).material.map=nb;
+ const atm=[-1,1].map(sx=>{const g=new T.Group();g.position.set(sx*6,0,-8);g.rotation.y=-sx*.35;sc.add(g);mesh(new T.BoxGeometry(1.3,2.3,1),M(0xdfe5ee,{metalness:.5,roughness:.3}),0,1.15,0,g);const s=mesh(new T.PlaneGeometry(.9,.6),B(0x3aff9c),0,1.65,.51,g);mesh(new T.BoxGeometry(.8,.25,.3),M(0x333844),0,1.0,.55,g);return s});
+ const coins=[];for(let i=0;i<16;i++)coins.push(mesh(new T.CylinderGeometry(.22,.22,.05,18),gold,0,0,0,sc));
+ const sg=txt('2−1 情報処理銀行',70,'#ffe9a0',1000,130,'#ffb020');sg.scale.set(9,1.2,1);sg.position.set(0,9,-11.4);sc.add(sg);let n=42,tn=9;
+ return{sc,cam,P,title:'💴 情報処理銀行　本店ロビー',upd(t,dt){tn+=dt;if(tn>4){tn=0;n=(n+1)%100}const g=nb.userData.g;g.fillStyle='#05080e';g.fillRect(0,0,512,128);g.fillStyle='#ff9a3a';g.font='900 44px '+JP;g.textBaseline='middle';g.fillText('お呼び出し  No.'+String(n).padStart(3,'0'),24,66);nb.needsUpdate=true;
+  coins.forEach((c,i)=>{const u=(t*.25+i/16)%1;c.position.set(Math.sin(u*TAU*2+i)*2.2+Math.sin(i)*3,1.4+u*3.2,-4+Math.cos(u*TAU*2+i)*.8);c.rotation.set(t*3+i,0,t*2);c.visible=u<.95});
+  tel.forEach((p,i)=>{p.aL.rotation.x=1.1+Math.sin(t*9+i)*.06;p.aR.rotation.x=1.1+Math.sin(t*8+i*2)*.06});cus.forEach((p,i)=>{p.g.position.y=Math.abs(Math.sin(t*1.5+i*2))*.01;p.head.rotation.y=Math.sin(t*.6+i)*.3});atm.forEach((s,i)=>s.material.color.setHSL(.4,1,.4+Math.sin(t*3+i)*.1))}}},
+fix(){const sc=base(0x07090f,.025),cam=new T.PerspectiveCamera(48,2.4,.1,90),P={x:0,y:3.3,z:9,lx:0,ly:3.4,lz:-9};
+ sc.add(new T.PointLight(0xffe2a0,1.2,40).translateY(8));floor(sc,'#1a1d27','#232836',44,18,.25);mesh(new T.BoxGeometry(44,18,1),M(0x2a2e3a,{roughness:.6,metalness:.4}),0,9,-10.8,sc);
+ const vg=new T.Group();vg.position.set(0,4.3,-10);sc.add(vg);mesh(new T.TorusGeometry(3.7,.55,16,56),steel,0,0,0,vg);const dr=mesh(new T.CylinderGeometry(3.3,3.3,.7,48),steel,0,0,0,vg);dr.rotation.x=PI/2;mesh(new T.TorusGeometry(2.4,.12,10,48),gold,0,0,.4,vg);
+ for(let i=0;i<14;i++){const a=i*TAU/14,b=mesh(new T.CylinderGeometry(.14,.14,.3,10),gold,Math.cos(a)*3,Math.sin(a)*3,.4,vg);b.rotation.x=PI/2}
+ const wh=new T.Group();wh.position.z=.6;vg.add(wh);for(let i=0;i<3;i++){const s=mesh(new T.BoxGeometry(.2,3.4,.2),gold,0,0,0,wh);s.rotation.z=i*PI/3}mesh(new T.SphereGeometry(.45,16,12),gold,0,0,0,wh);glowS('rgba(255,220,120,.8)',13,0,0,-1,vg);
+ for(const sx of[-1,1])for(let r=0;r<4;r++)for(let c=0;c<4-r;c++)mesh(new T.BoxGeometry(1.2,.45,.6),gold,sx*(6.2+c*1.3+r*.65),.3+r*.47,-5,sc);
+ const lc=cvs(512,128);mesh(new T.BoxGeometry(5,1.3,.2),M(0x07090d),0,8.4,-9.6,sc);mesh(new T.PlaneGeometry(4.7,1.1),B(0xffffff),0,8.4,-9.48,sc).material.map=lc;
+ const beams=[];for(let i=0;i<5;i++)beams.push(mesh(new T.BoxGeometry(9,.03,.03),glowM(),0,.5+i*.7,2-i*.9,sc));
+ function glowM(){return new T.MeshBasicMaterial({color:0xff2a2a,transparent:true,blending:T.AdditiveBlending})}
+ return{sc,cam,P,title:'🔒 大金庫室　定期預金',upd(t){wh.rotation.z=Math.sin(t*.3)*.5;const d=new Date(),g=lc.userData.g;g.fillStyle='#05080e';g.fillRect(0,0,512,128);g.fillStyle='#3aff9c';g.font='900 64px '+JP;g.textBaseline='middle';g.textAlign='center';g.fillText(d.toTimeString().slice(0,8),256,64);g.textAlign='left';lc.needsUpdate=true;beams.forEach((b,i)=>{b.material.opacity=.45+.4*Math.sin(t*3+i*1.7);b.position.x=Math.sin(t*.7+i)*1.2})}}},
+tx(){const sc=base(0x060c1c,.02),cam=new T.PerspectiveCamera(48,2.4,.1,90),P={x:0,y:4,z:11,lx:0,ly:3,lz:-4};
+ sc.add(new T.PointLight(0x9ac0ff,1.4,40).translateY(8));floor(sc,'#0a1426','#102040',44,22,.2);
+ const tw=sx=>{const g=new T.Group();g.position.set(sx*7,0,-3);sc.add(g);mesh(new T.CylinderGeometry(1.2,1.5,.4,24),gold,0,.2,0,g);mesh(new T.BoxGeometry(1.6,4.2,1.2),M(0x1a2a4a,{metalness:.6,roughness:.3}),0,2.5,0,g);mesh(new T.PlaneGeometry(1.2,1.6),B(0x4ac8ff),0,3,.62,g);const r=mesh(new T.TorusGeometry(1.5,.06,8,40),B(0x7af0ff),0,5.1,0,g);glowS('rgba(90,200,255,.8)',7,0,3.2,0,g);return r};
+ const rings=[tw(-1),tw(1)],mid=mesh(new T.TorusGeometry(1.8,.08,8,48),B(0xffd76a),0,4.5,-3,sc),mid2=mesh(new T.TorusGeometry(1.2,.06,8,48),B(0x7af0ff),0,4.5,-3,sc);
+ const env=[];for(let i=0;i<7;i++){const g=new T.Group();sc.add(g);mesh(new T.BoxGeometry(.7,.45,.06),M(0xfdfdf5),0,0,0,g);mesh(new T.CylinderGeometry(.09,.09,.08,12),M(0xc8322f),0,0,.06,g).rotation.x=PI/2;glowS('rgba(255,230,140,.9)',1.6,0,0,0,g);env.push(g)}
+ const co=[];for(let i=0;i<20;i++)co.push(mesh(new T.CylinderGeometry(.14,.14,.04,14),gold,0,0,0,sc));
+ const t1=txt('送る',60,'#ffe9a0',256,100);t1.scale.set(2.2,.9,1);t1.position.set(-7,6.6,-3);sc.add(t1);const t2=txt('受け取る',60,'#9af0ff',320,100);t2.scale.set(2.8,.9,1);t2.position.set(7,6.6,-3);sc.add(t2);
+ return{sc,cam,P,title:'✉️ 振込センター',upd(t){rings.forEach((r,i)=>{r.rotation.x=PI/2+Math.sin(t*2+i)*.3;r.rotation.z=t*1.2});mid.rotation.x=t*.9;mid.rotation.y=t*.6;mid2.rotation.x=-t*1.1;
+  env.forEach((g,i)=>{const u=(t*.2+i/env.length)%1;g.position.set(-7+14*u,3.2+Math.sin(u*PI)*4.2,-3+Math.sin(u*TAU)*.4);g.rotation.set(Math.sin(t*2+i)*.2,0,-Math.cos(u*PI)*.5);g.scale.setScalar(.7+Math.sin(u*PI)*.5)});
+  co.forEach((c,i)=>{const u=(t*.35+i/co.length)%1;c.position.set(-7+14*u,3+Math.sin(u*PI)*2.6+Math.sin(t*4+i)*.15,-3+(i%3-1)*.7);c.rotation.set(t*4+i,0,0)})}}},
+loan(){const sc=base(0x0c1224,.02),cam=new T.PerspectiveCamera(48,2.4,.1,90),P={x:0,y:3.4,z:8.5,lx:0,ly:2.2,lz:-4};
+ sc.add(new T.PointLight(0xffe2b0,1.3,36).translateY(7));floor(sc,'#3a2a1c','#4a3624',40,12,.35);mesh(new T.BoxGeometry(40,14,.5),M(0x14203a),0,7,-9,sc);
+ for(let i=0;i<20;i++){const h=2+Math.random()*5;mesh(new T.BoxGeometry(1.4,h,.4),M(0x0a1224),-14+i*1.5,h/2+3,-8.6,sc);for(let k=0;k<h*1.2;k++)if(Math.random()<.5)mesh(new T.PlaneGeometry(.18,.22),B(0xffe9a0),-14.4+i*1.5+(k%2)*.4,3.3+Math.floor(k/2)*.7,-8.38,sc)}
+ mesh(new T.BoxGeometry(7,.2,2.6),M(0x4a2c14,{roughness:.45}),0,1.1,-1.4,sc);mesh(new T.BoxGeometry(6.6,1.05,2.3),M(0x3a220f),0,.52,-1.4,sc);
+ const pg=new T.Group();pg.position.set(-.8,1.25,-1.2);sc.add(pg);mesh(new T.BoxGeometry(2.4,.03,1.7),M(0xfdfdf5),0,0,0,pg);const sk=cvs(256,128,g=>{g.fillStyle='#c8322f';g.font='900 80px '+JP;g.textAlign='center';g.textBaseline='middle';g.fillText('承認',128,66);g.strokeStyle='#c8322f';g.lineWidth=7;g.strokeRect(34,10,188,108)});const mk=mesh(new T.PlaneGeometry(1.1,.55),new T.MeshBasicMaterial({map:sk,transparent:true,opacity:0}),.5,.03,.2,pg);mk.rotation.x=-PI/2;
+ const stp=new T.Group();stp.position.set(-.3,2.4,-1);sc.add(stp);mesh(new T.CylinderGeometry(.28,.34,.5,16),M(0x7a1020),0,.3,0,stp);mesh(new T.CylinderGeometry(.45,.5,.18,18),gold,0,-.05,0,stp);mesh(new T.SphereGeometry(.2,12,10),gold,0,.62,0,stp);
+ for(let i=0;i<4;i++)for(let k=0;k<3;k++)mesh(new T.BoxGeometry(.8,.12,.5),M(0xd8c88a),2.3+i*.05,1.26+k*.13,-1,sc);
+ const bk=person({suit:0x1c2438});bk.g.rotation.y=PI;bk.g.position.set(0,0,-3);sc.add(bk.g);const cu=person({stand:false,suit:0x3b2a2a});cu.g.position.set(-.8,0,1.4);sc.add(cu.g);
+ return{sc,cam,P,title:'🏛️ 融資窓口',upd(t){const c=(t*.35)%3;let y=2.4;if(c<.4)y=2.4-(c/.4)*.98;else if(c<.55)y=1.42;else if(c<.95)y=1.42+(c-.55)/.4*.98;stp.position.set(-.3,y,-1);mk.material.opacity=c<.4?0:c<.55?(c-.4)/.15:c<2.5?1:(3-c)/.5;
+  bk.aL.rotation.x=1.0+Math.sin(t*2)*.1;bk.aR.rotation.x=1.0;cu.head.rotation.y=Math.sin(t*.5)*.3}}},
+lv(){const sc=base(0x0a0818,.02),cam=new T.PerspectiveCamera(48,2.4,.1,90),P={x:0,y:3.6,z:10,lx:0,ly:3,lz:-3};
+ sc.add(new T.PointLight(0xfff0c0,1.6,40).translateY(9));floor(sc,'#1a1424','#241a34',40,16,.2);
+ const bm=mesh(new T.CylinderGeometry(1.2,4.5,14,28,1,true),new T.MeshBasicMaterial({color:0xffe9a0,opacity:.12,transparent:true,blending:T.AdditiveBlending,side:T.DoubleSide,depthWrite:false}),0,7,-3,sc);
+ [[0,1.6,0xe8c24a],[-2.6,1.1,0xc0c8d4],[2.6,.8,0xc0804a]].forEach(([x,h,c])=>mesh(new T.BoxGeometry(2.4,h,2.2),M(c,{metalness:.8,roughness:.3}),x,h/2,-3,sc));
+ const tr=new T.Group();tr.position.set(0,1.6,-3);sc.add(tr);mesh(new T.CylinderGeometry(.5,.18,1.4,16),gold,0,1.1,0,tr);mesh(new T.CylinderGeometry(.9,.5,.9,20,1,true),M(0xe8c24a,{metalness:.9,roughness:.2,side:T.DoubleSide}),0,2.1,0,tr);mesh(new T.CylinderGeometry(.45,.5,.15,16),gold,0,.3,0,tr);glowS('rgba(255,225,120,.9)',5,0,2.1,0,tr);
+ const st=[];for(let i=0;i<10;i++){const s=mesh(new T.OctahedronGeometry(.28),M(0xffe27a,{emissive:0x8a6a10,metalness:.6,roughness:.3}),0,0,0,sc);st.push(s)}
+ const cf=[];for(let i=0;i<60;i++)cf.push(mesh(new T.PlaneGeometry(.16,.1),new T.MeshBasicMaterial({color:[0xffd76a,0xff5a7a,0x5ab0ff,0x5aff9a][i%4],side:T.DoubleSide}),(Math.random()-.5)*14,Math.random()*10,-3+(Math.random()-.5)*6,sc));
+ const t1=txt('LEVEL UP',70,'#ffe9a0',700,120,'#ffb020');t1.scale.set(7,1.2,1);t1.position.set(0,7.2,-3);sc.add(t1);
+ return{sc,cam,P,title:'🏅 殿堂　銀行レベル',upd(t,dt){tr.rotation.y=t*.9;bm.rotation.y=t*.2;st.forEach((s,i)=>{const a=t*.8+i*TAU/10;s.position.set(Math.cos(a)*3.6,3.4+Math.sin(t*1.3+i)*.6,-3+Math.sin(a)*3.6);s.rotation.set(t*2,t*1.5,0)});cf.forEach((c,i)=>{c.position.y-=dt*(.8+i%4*.2);if(c.position.y<0)c.position.y=10;c.rotation.set(t*2+i,t*1.4,0)})}}},
+msg(){const sc=base(0x0c1424,.02),cam=new T.PerspectiveCamera(48,2.4,.1,90),P={x:0,y:3.3,z:8.5,lx:0,ly:2.8,lz:-4};
+ sc.add(new T.PointLight(0xffe2b0,1.3,36).translateY(7));floor(sc,'#e9ecf2','#9aa6b8',40,14,.25);mesh(new T.BoxGeometry(40,14,.5),M(0x1a2a4a),0,7,-8,sc);
+ mesh(new T.BoxGeometry(6,1.1,1.6),M(0x4a2c14),0,.55,-3,sc);mesh(new T.BoxGeometry(6.2,.1,1.8),gold,0,1.15,-3,sc);
+ const op=person({suit:0x1f6fd1,tie:0xffffff});op.g.rotation.y=PI;op.g.position.set(0,0,-4.4);sc.add(op.g);const hs=mesh(new T.TorusGeometry(.2,.03,6,20,PI),B(0x222222),0,1.5,-4.4,sc);mesh(new T.SphereGeometry(.06,8,6),B(0x222222),.2,1.43,-4.4,sc);
+ mesh(new T.BoxGeometry(1.3,.8,.06),M(0x08080c),-1.6,1.6,-3.2,sc);const cl=cvs(256,256,g=>{g.fillStyle='#fff';g.beginPath();g.arc(128,128,120,0,TAU);g.fill();g.strokeStyle='#222';g.lineWidth=10;g.stroke()});mesh(new T.PlaneGeometry(1.5,1.5),new T.MeshBasicMaterial({map:cl}),6,6,-7.7,sc);
+ const bub=[];['？','…','💬','OK','✉','！'].forEach((s,i)=>{const sp=txt(s,64,'#ffffff',200,110,'#5ab0ff');sp.scale.set(1.4,.8,1);sc.add(sp);bub.push(sp)});
+ const sg=txt('カスタマーサポート',60,'#9af0ff',800,120,'#4ac8ff');sg.scale.set(8,1.2,1);sg.position.set(0,6.6,-7.6);sc.add(sg);
+ return{sc,cam,P,title:'💬 カスタマーサポート　運営',upd(t,dt){op.head.rotation.y=Math.sin(t*.6)*.3;op.aL.rotation.x=1.0+Math.sin(t*8)*.05;op.aR.rotation.x=1.0+Math.sin(t*7)*.05;bub.forEach((b,i)=>{const u=(t*.18+i/bub.length)%1;b.position.set(-4+(i%3)*4+Math.sin(t+i)*.5,2.4+u*4.5,-5.2);b.material.opacity=Math.sin(u*PI)})}}}
+};
+/* ================= runtime ================= */
+const scenes={};let cur=null,curTab='',raf=0,last=performance.now(),t=0;
+function fit(){const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;R.setSize(w,h,false);for(const k in scenes){const s=scenes[k];if(s){s.cam.aspect=w/h;s.cam.fov=w/h<1.5?60:48;s.cam.updateProjectionMatrix()}}}
+function show(tab){const key=BUILD[tab]?tab:'acct';if(key===curTab)return;curTab=key;
+ if(!(key in scenes)){try{scenes[key]=BUILD[key]();scenes[key].cam.position.set(scenes[key].P.x,scenes[key].P.y,scenes[key].P.z)}catch(e){console.warn('BK3 scene',key,e);scenes[key]=null}}
+ cur=scenes[key];if(!cur){host.style.display='none';return}host.style.display='block';tag.innerHTML=cur.title;fit()}
+function frame(ts){raf=requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/1000||0);last=ts;if(document.hidden||!cur)return;const r=host.getBoundingClientRect();if(r.bottom<0||r.top>innerHeight)return;
+ t+=dt;const P=cur.P,c=cur.cam;c.position.set(P.x+Math.sin(t*.22)*.8,P.y+Math.sin(t*.3)*.12,P.z);c.lookAt(P.lx+Math.sin(t*.22)*.5,P.ly,P.lz);cur.upd(t,dt);R.render(cur.sc,c)}
+try{if(typeof ResizeObserver!=='undefined')new ResizeObserver(fit).observe(host);addEventListener('resize',fit);
+ const o=window.setTab;if(typeof o==='function'){window.setTab=function(x){const r=o.apply(this,arguments);try{show(x)}catch(e){console.warn('BK3',e)}return r}}
+ show((typeof ui!=='undefined'&&ui.tab)||'acct');raf=requestAnimationFrame(frame)}catch(e){console.warn('BK3 off',e);host.style.display='none'}
+return{show,scenes,BUILD}})();
 </script>
 </body></html>
