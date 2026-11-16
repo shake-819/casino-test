@@ -193,20 +193,6 @@ body.vip .mat{border-color:#f6e27a;box-shadow:0 0 18px #d4af3788}
 body.svip{background:linear-gradient(180deg,#8fbdf0 0%,#dcecff 16%,#fff3c6 30%,#6a4a36 45%,#2e0a0a 57%,#7e1207 82%,#ff5a1f 100%) fixed}
 body.svip::before{background:radial-gradient(ellipse 60% 18% at 20% 8%,#fffc 0,transparent 70%),radial-gradient(ellipse 50% 14% at 78% 16%,#fffb 0,transparent 70%),radial-gradient(ellipse 70% 20% at 50% 100%,#ffb02e99,transparent 70%);animation:none}
 body.svip #vipfx{display:none!important}
-body.svoff #svfx,body.svoff .svban,body.svoff .svpt{display:none!important}body.svoff.svh::after,body.svoff.svx::after{display:none!important}body.svoff.svx #s2{animation:none!important}body.svoff.svip .btn::after{animation:none!important;opacity:0!important}
-#svfx{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;display:none}body.svip #svfx{display:block}
-#svfx .rays{position:absolute;left:-60%;width:220%;top:-90vh;height:140vh;background:repeating-conic-gradient(from 0deg at 50% 100%,#ffffff40 0 4deg,transparent 4deg 13deg);transform-origin:50% 100%;animation:svry 14s ease-in-out infinite alternate;-webkit-mask-image:linear-gradient(#000 30%,transparent 95%);mask-image:linear-gradient(#000 30%,transparent 95%)}
-@keyframes svry{from{transform:rotate(-7deg)}to{transform:rotate(7deg)}}
-#svfx .cl{position:absolute;left:var(--l);width:var(--w);height:auto;opacity:.95;filter:drop-shadow(0 6px 8px #6f9fd8aa);animation:svcl var(--d) ease-in-out infinite alternate;animation-delay:var(--dl)}
-@keyframes svcl{0%{transform:translate(-40px,0) scale(1)}50%{transform:translate(10px,-8px) scale(1.05)}100%{transform:translate(55px,3px) scale(.98)}}
-#svfx .fire{position:absolute;left:-6%;right:-6%;bottom:-24px;height:64vh;filter:url(#svft);animation:svfq 1.9s linear infinite}
-#svfx .fglow{position:absolute;left:0;right:0;bottom:0;height:30vh;background:radial-gradient(ellipse 60% 100% at 50% 100%,#ffd23acc,#ff5a1a99 45%,transparent 78%);animation:svgl 2.3s ease-in-out infinite alternate}
-#svfx .fp{position:absolute;bottom:0;width:calc(var(--s)*.7);height:calc(var(--s)*1.3);margin-left:calc(var(--s)*-.35);border-radius:50% 50% 50% 50%/72% 72% 28% 28%;background:#ffe9a0;mix-blend-mode:screen;transform-origin:50% 100%;will-change:transform,opacity;animation:svfr var(--d) cubic-bezier(.3,.1,.5,1) infinite;animation-delay:var(--dl)}
-@keyframes svfr{0%{transform:translate(0,0) scale(1,.7);background:#fff6c0;opacity:0}8%{opacity:1}30%{background:#ffc02e;transform:translate(calc(var(--dx)*.3),calc(var(--h)*.3)) scale(.85,1.15)}60%{transform:translate(var(--dx),calc(var(--h)*.65)) scale(.5,1.5);background:#ff5a1a;opacity:.85}85%{background:#b3200f;opacity:.4}100%{transform:translate(calc(var(--dx)*-.5),var(--h)) scale(.12,1.6);opacity:0;background:#5a0a08}}
-@keyframes svfq{0%,100%{opacity:1}13%{opacity:.86}27%{opacity:1}41%{opacity:.92}58%{opacity:.82}73%{opacity:1}88%{opacity:.9}}
-@keyframes svgl{from{opacity:.65;transform:scaleY(.85)}to{opacity:1;transform:scaleY(1.12)}}
-#svfx .em{position:absolute;bottom:4vh;width:5px;height:5px;border-radius:50%;background:radial-gradient(#fff6b0,#ff7a1f 60%,transparent 70%);animation:svem var(--d) ease-out infinite;animation-delay:var(--dl)}
-@keyframes svem{0%{transform:translate(0,0);opacity:0}15%{opacity:1}100%{transform:translate(24px,-48vh);opacity:0}}
 body.svip.vip.svtop .table{background:linear-gradient(180deg,#22365e55 0,#1a214544 36%,#2c0d1466 62%,#3d0a0899 100%);-webkit-backdrop-filter:blur(1px);backdrop-filter:blur(1px)}
 body.svip.svtop .svdep,body.svip.svtop .vcd{background:#000a}
 body.svip .svst{min-width:0;width:auto;border-radius:11px;padding:0 4px;font-size:9px;white-space:nowrap}
@@ -226,15 +212,6 @@ body.svip.vip .gc b{color:#fff}body.svip.vip .gc:hover{box-shadow:0 0 30px #fff0
 body.svip.vip .ch{border-color:#ffe9a0}body.svip.vip .ch.on{box-shadow:0 0 18px #fff,0 0 30px #ff8a3a,inset 0 0 0 3px var(--c)}
 body.svip.vip .hand{background:#0006;border-color:#ffe9a088;box-shadow:inset 0 0 14px #ff5a1f22}body.svip.vip .hand.w{box-shadow:0 0 22px #fff6c0,inset 0 0 14px #ffe9a055;border-color:#fff}
 body.svip.vip .vcd{background:#0009}
-body.svip.svh::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:97;background:radial-gradient(circle at 50% 28%,#fffbe8,#ffe9a0aa 40%,transparent 72%);animation:svhf 2.6s ease-out both}
-body.svip.svx::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:97;background:radial-gradient(circle at 50% 100%,#ff5a1f,#9a1208cc 45%,transparent 78%);animation:svxf 2.6s ease-out both}
-body.svip.svx #s2{animation:svsh .5s 2}
-@keyframes svhf{0%{opacity:0}15%{opacity:1}100%{opacity:0}}@keyframes svxf{0%{opacity:0}15%{opacity:1}100%{opacity:0}}@keyframes svsh{0%,100%{transform:none}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-.svban{position:fixed;left:0;right:0;top:34%;text-align:center;font-weight:900;font-size:clamp(40px,13vw,96px);letter-spacing:.12em;pointer-events:none;z-index:100;animation:svbn 2.5s ease-out both}
-.svban.h{color:#fff;text-shadow:0 0 20px #ffd76a,0 0 50px #fff6c0,0 2px 0 #b98a20}.svban.x{color:#ffd0a0;text-shadow:0 0 20px #ff3b1a,0 0 50px #ff5a1f,0 3px 0 #300}
-@keyframes svbn{0%{transform:scale(.4);opacity:0}15%{transform:scale(1.1);opacity:1}30%{transform:scale(1)}85%{opacity:1}100%{transform:scale(1.15);opacity:0}}
-.svpt{position:fixed;pointer-events:none;z-index:99}.svpt.h{top:-50px;animation:svfa 3.2s ease-in both}.svpt.x{bottom:-50px;animation:svri 3s ease-out both}
-@keyframes svfa{to{transform:translateY(115vh) translateX(40px) rotate(40deg)}}@keyframes svri{to{transform:translateY(-115vh) translateX(-30px) rotate(-25deg)}}
 .svbig{font-size:clamp(44px,14vw,84px);font-weight:900;margin:6px 0;color:#fff;text-shadow:0 0 18px #ffd76a,0 0 40px #ff5a1f66;font-variant-numeric:tabular-nums}.svbig.r{color:#ff4d5e}.svbig.k{color:#c9c9d1}.svbig.g{color:#3fe08a}
 .svdep{margin:8px 0;padding:10px;border-radius:12px;background:#0008;border:1px solid #ffe9a099}.svdep b{display:block;font-size:clamp(22px,6vw,34px);color:#fff;word-break:break-all}
 .svc{display:block;font-size:11px;opacity:.7;word-break:break-all;font-weight:600;margin-top:2px}.svj{word-break:break-all}.svw{display:block;color:#ffb08a;font-weight:700}
@@ -1494,7 +1471,7 @@ async function svGive(a){if(a<=0n)return true;for(let i=0;i<3;i++){try{await sRp
   const p=svPendGet();p.push(a.toString());svPendSet(p);sNote='通信エラーで払い戻しを入金できませんでした。銀行ページ（または次回のSVIPルーム）で入金されます';return false}   // 入金できなかった分は保存しておき、あとで入金する
 async function svFlush(){const p=svPendGet();if(!p.length)return;svPendSet([]);const rest=[];for(const s of p){try{await sRpc('bank_svip_give',{p_amt:s})}catch(e){rest.push(s)}}if(rest.length)svPendSet(rest.concat(svPendGet()))}
 function svLog(g,b,d){try{const o=JSON.parse(localStorage.getItem(SLOG))||{net:'0',n:0,rec:[]};o.net=(sBI(o.net)+d).toString();o.n=(o.n||0)+1;o.rec.unshift({t:Date.now(),g,b:b.toString(),d:d.toString()});o.rec.length=Math.min(o.rec.length,30);localStorage.setItem(SLOG,JSON.stringify(o))}catch(e){}}
-const svEnd=async(b,pay,g,q)=>{if(!q){const d=pay-b;if(d>0n)svFx(1);else if(d<0n)svFx(0)}const ok=await svGive(pay);svLog(g,b,pay-b);const e=$('#sdp');if(e)e.innerHTML=svJ(svD,4);return ok};
+const svEnd=async(b,pay,g,q)=>{const ok=await svGive(pay);svLog(g,b,pay-b);const e=$('#sdp');if(e)e.innerHTML=svJ(svD,4);return ok};
 const svPay=(b,m)=>b*BigInt(Math.floor(m*100+1e-6))/100n;
 /* ---- 賭け金の入力：（1〜9999）×（京〜無量大数）。最低1京。ALL INは預金の全額（上限あり） ---- */
 const sb={n:1,e:16,all:0};
@@ -1523,7 +1500,7 @@ async function svipRoom(t){svStop();svoClose();svoT++;if(!svOk())return svipGate
 <button class="gc" onclick="svkPre()"><i>🔫</i><b>SVIPロシアンルーレット</b><span>HP5の撃ち合い・勝てば×1.9・アイテム5種（注射器・虫眼鏡・リバース・手錠・リロード）</span></button>
 <button class="gc" onclick="svoLobby()"><i>🌐</i><b>SVIPオンライン</b><span>ショーダウン（最大6人）・SVIP限定・通信料1％</span></button></div>
 <div class="lab" style="margin-top:12px">賭けは預金から引き落とされ、払い戻しは預金に入金されます。1回の賭けは 1京〜9999無量大数。<br>会費 ${svJ(BigInt(SDUE))}チップ／日（毎日 UTC 9:00＝日本時間 18:00 に手持ちから差し引き）　次回 ${new Date(sNext()).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}</div>
-<div class="chips"><button class="btn s" id="svft" onclick="svFxTog()">${svOff()?'✨ エフェクト：OFF':'✨ エフェクト：ON'}</button><button class="btn s" onclick="svipLeave()">SVIP会員を退会する</button><button class="btn s d" onclick="vipRoom()">← VIPルーム</button></div>`);
+<div class="chips"><button class="btn s" onclick="svipLeave()">SVIP会員を退会する</button><button class="btn s d" onclick="vipRoom()">← VIPルーム</button></div>`);
   try{await svFlush();await svSync()}catch(e){const m=$('#m');if(m&&$('#gt').textContent=='SVIPルーム')m.textContent=e.message}
   const d=$('#sdp');if(d&&$('#gt').textContent=='SVIPルーム'){d.textContent=svJ(svD,5);const c=$('#sdc');if(c)c.textContent=svC(svD)}}
 /* ---- ブラックホール・クラッシュ ---- */
@@ -1825,7 +1802,7 @@ function svoResolve(o){if(!o.host||o.fin||sol!=o)return;o.fin=1;clearTimeout(o.t
 async function svoApply(o,res){if(!o||sol!=o||o.settled)return;o.settled=1;o.fin=1;clearTimeout(o.tm);clearTimeout(o.wd);clearInterval(o.cd);
   const me=res.ps.find(p=>p.id==HID),pay=sBI(me?me.pay:'0');lv=null;
   st(`<div class="msg" id="m">${res.win?(res.win==HID?`🏆 勝利！ +${svJ(pay-o.b,3)}`:`💀 敗北… ${pay>0n?'賭けの半分が戻りました':'-'+svJ(o.b,3)}`):'全員降りたので、賭けは返却されました'}</div><div class="row" style="gap:12px">${res.ps.map(p=>`<div class="hand${p.id==res.win?' w':''}" style="padding:8px 10px">${cd({r:p.r,s:p.s})}<div class="lab">${vEsc(p.nm)}${p.id==HID?'（あなた）':''}<br>${p.dec=='in'?'勝負':'降り'}</div></div>`).join('')}</div><div class="lab">${res.win?`通信料 ${svJ(sBI(res.fee),3)}（稼いだ分の1％）を引きました`:''}</div><div class="chips"><button class="btn" onclick="svoBack2()">ロビーへ</button><button class="btn s d" onclick="svoBack()">← SVIPルーム</button></div>`);
-  if(res.win)svFx(res.win==HID);await svGive(pay);if(res.win)svLog('ショーダウン',o.b,pay-o.b);const e=$('#sdp');if(e)e.innerHTML=svJ(svD,4)}
+  await svGive(pay);if(res.win)svLog('ショーダウン',o.b,pay-o.b);const e=$('#sdp');if(e)e.innerHTML=svJ(svD,4)}
 function svoBack2(){svoOut();svoLobby()}
 const SVH={
   sj:d=>{const o=sol;if(!o||!o.host)return;if(o.ps.some(p=>p.id==d.pid)){oSend(o.c,'sok',{to:d.pid});return svoSync()}
@@ -1882,24 +1859,7 @@ async function svkGo(){if(svBusy||vr)return;svBusy=1;msg('預金から引き落�
 function svkEnd(win,t){const b=vr.b,pay=win?svPay(b,1.9):0n;vr=null;lv=null;
   st(`<div class="msg" id="m">${win?`🏆 勝利！ +${svJ(pay-b,3)}`:`💀 敗北… -${svJ(b,3)}`}</div><div class="lab">${t}</div><div class="chips"><button class="btn" onclick="svkPre()">もう一度</button><button class="btn s d" onclick="svipRoom()">← SVIPルーム</button></div>`);
   svEnd(b,pay,'ロシアンルーレット')}
-/* ---- 天国と地獄の演出 ---- */
-const svOff=()=>{try{return localStorage.getItem('cj_svfx_off')=='1'}catch(e){return false}};
-function svFxTog(){const v=!svOff();try{localStorage.setItem('cj_svfx_off',v?'1':'0')}catch(e){}document.body.classList.toggle('svoff',v);const b=$('#svft');if(b)b.textContent=v?'✨ エフェクト：OFF':'✨ エフェクト：ON'}
-function svFx(win){if(win==null||svOff()||!document.body.classList.contains('svip'))return;const b=document.body;b.classList.remove('svh','svx');void b.offsetWidth;b.classList.add(win?'svh':'svx');
-  const ban=document.createElement('div');ban.className='svban '+(win?'h':'x');ban.textContent=win?'☁ 天 国 ☁':'🔥 地 獄 🔥';document.body.appendChild(ban);setTimeout(()=>ban.remove(),2600);
-  const A=win?['😇','👼','✨','🪽','☁️','🕊️']:['🔥','👹','💀','😈','🔥','⛓️'];
-  for(let i=0;i<30;i++){const e=document.createElement('span');e.className='svpt '+(win?'h':'x');e.textContent=A[R(A.length)];e.style.cssText=`left:${R(100)}vw;animation-delay:${R(900)}ms;font-size:${20+R(26)}px`;document.body.appendChild(e);setTimeout(()=>e.remove(),3700)}
-  setTimeout(()=>b.classList.remove('svh','svx'),2800)}
-function svfxBuild(){if($('#svfx'))return;const d=document.createElement('div');d.id='svfx';let h='<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="svcg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#f4f9ff"/><stop offset="1" stop-color="#c9dcf3"/></linearGradient><linearGradient id="svfg" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fff6b0"/><stop offset=".3" stop-color="#ffb02e"/><stop offset=".65" stop-color="#ff5a1f"/><stop offset="1" stop-color="#b3200f"/></linearGradient><linearGradient id="svfh" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ffd23a"/><stop offset=".5" stop-color="#ff3b1a"/><stop offset="1" stop-color="#6a0a08"/></linearGradient><filter id="svft" x="-10%" y="-40%" width="120%" height="150%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.007 0.02" numOctaves="2" seed="7" result="n"><animate attributeName="baseFrequency" dur="5s" values="0.007 0.02;0.011 0.03;0.006 0.024;0.007 0.02" repeatCount="indefinite"/></feTurbulence><feDisplacementMap in="SourceGraphic" in2="n" scale="48" xChannelSelector="R" yChannelSelector="G" result="d"/><feGaussianBlur in="d" stdDeviation="2.4"/></filter></defs></svg><div class="rays"></div>';
-  [[-4,8,32,22,0],[27,22,24,26,-8],[56,6,34,30,-4],[80,26,24,19,-12],[8,40,20,36,-6]].forEach(([l,t,w,du,dl],i)=>{const V=i%2?'<circle cx="38" cy="74" r="26"/><circle cx="70" cy="52" r="32"/><circle cx="112" cy="40" r="38"/><circle cx="152" cy="56" r="30"/><circle cx="182" cy="76" r="24"/>':'<circle cx="34" cy="76" r="22"/><circle cx="62" cy="58" r="28"/><circle cx="96" cy="44" r="30"/><circle cx="134" cy="36" r="34"/><circle cx="168" cy="58" r="28"/><circle cx="190" cy="78" r="20"/>';h+=`<svg class="cl" viewBox="0 0 220 110" style="--l:${l}%;--w:${w}vw;--d:${du}s;--dl:${dl}s;top:${t/2}%"><g fill="url(#svcg)"><rect x="26" y="68" width="168" height="34" rx="17"/>${V}</g></svg>`});
-  /* 炎：粒をたくさん立ちのぼらせて、色を黄→橙→赤→暗赤へ変えながら小さく消す。重ねてぼかすと本物の炎のように揺らぐ */
-  h+='<div class="fire"><div class="fglow"></div>';const C=[6,17,28,39,50,61,72,83,94];
-  for(let i=0;i<120;i++){const c=C[R(C.length)],g=(R(100)+R(100)+R(100)-150)/150,l=Math.max(-4,Math.min(104,c+g*13)),hh=14+R(30)+(R(100)<12?18:0),sz=34+R(64),du=(1.1+R(160)/100).toFixed(2),dx=R(90)-45;
-    h+=`<i class="fp" style="left:${l.toFixed(1)}%;--s:${sz}px;--h:-${hh}vh;--dx:${dx}px;--d:${du}s;--dl:-${(R(300)/100).toFixed(2)}s"></i>`}
-  h+='</div>';
-  for(let i=0;i<14;i++)h+=`<b class="em" style="left:${R(98)}%;--d:${(2.4+R(30)/10).toFixed(1)}s;--dl:-${(R(40)/10).toFixed(1)}s"></b>`;
-  d.innerHTML=h;document.body.appendChild(d)}
-setTimeout(()=>{document.body.classList.toggle('svoff',svOff());const f=()=>{if(document.body.classList.contains('svip')&&!svOff())svfxBuild()};new MutationObserver(f).observe(document.body,{attributes:true,attributeFilter:['class']});f()},0);
+
 </script><script>/* 3D pointer tilt (visual only) */
 (()=>{if(matchMedia('(prefers-reduced-motion:reduce)').matches||matchMedia('(hover:none)').matches)return;
 const s0=document.getElementById('s0');
@@ -3676,9 +3636,9 @@ return{sync}})();
 .sv3wh{position:absolute;inset:0;border-radius:14px;overflow:hidden;background:#07040c;box-shadow:0 0 0 2px var(--g),0 10px 24px #000a}
 </style>
 <script>
-/* ===== SV3: SVIP room and SVIP games as Three.js scenes (heaven & hell motif). Game logic is untouched:
-   - SVIPルーム: a heaven & hell diorama banner (clouds + halo vs lava + flames, gate and a floating diamond).
-     The DOM grid below stays fully usable.
+/* ===== SV3: SVIP room and SVIP games as Three.js scenes. Game logic is untouched:
+   - SVIPルーム: a heaven & hell diorama banner (clouds + halo vs lava rocks + horns, gate and a floating
+     diamond; no flame particles). The DOM grid below stays fully usable.
    - ブラックホール・クラッシュ: a black hole scene; a light orb orbits closer as the multiplier (read live
      from #svx) grows, is sucked in on crash, bursts gold on cashout.
    - ダイヤモンド・マインズ: a 3D 5x5 tile field mirroring the .svt buttons; clicks forward to the DOM tiles.
@@ -3686,7 +3646,7 @@ return{sync}})();
      the betting mat stays DOM and the result badge (#rn) stays visible.
    堕天のラダー / ゴールデン・パチンコ are already full canvas games and がっぽり寿司 is an external iframe,
    so they are left as-is. SVIPロシアン is VR3's scene and SVIPオンライン is OL3's scene.
-   The SVIP "エフェクト OFF" setting (body.svoff) disables SV3 too. Any failure falls back to the 2D DOM. ===== */
+   Any failure falls back to the 2D DOM. ===== */
 window.SV3=(function(){
 const T=window.THREE;if(!(T&&window.JX&&JX.ok))return{sync(){}};
 const TAU=Math.PI*2,PI=Math.PI;let S=null,broken=false;
@@ -3701,7 +3661,6 @@ function sync(){const gt=document.getElementById('gt'),stg=document.getElementBy
  const mine=title==='SVIPルーム'||title==='ブラックホール・クラッシュ'||title==='ダイヤモンド・マインズ'||title==='プラチナ・ルーレット';
  if(!mine){if(S)dispose();return}
  if(broken)return;
- if(document.body.classList.contains('svoff')){if(S)dispose();return}
  try{
   if(title==='SVIPルーム'){if(!(S&&S.kind=='room'&&!S.dead)){if(S)dispose();buildRoom()}}
   else if(title==='ブラックホール・クラッシュ'){if(S&&S.kind=='crash'&&!S.dead)S.rehost(stg);else{if(S)dispose();buildCrash(stg)}}
@@ -3724,7 +3683,7 @@ function buildRoom(){
  sc.add(new T.AmbientLight(0x8a90c0,.85));
  const dl=new T.DirectionalLight(0xd8ecff,1.1);dl.position.set(-18,24,12);sc.add(dl);
  const gold=new T.PointLight(0xffc060,1.1,60);gold.position.set(0,10,4);sc.add(gold);
- const hell=new T.PointLight(0xff4a1a,1.4,55);hell.position.set(15,4,2);sc.add(hell);
+ const hell=new T.PointLight(0xff4a1a,1.2,55);hell.position.set(15,4,2);sc.add(hell);
  /* split ground: marble (heaven) / lava rock (hell) */
  const marbleTex=cvs(256,256,(g,w,h)=>{g.fillStyle='#dfe9f6';g.fillRect(0,0,w,h);g.strokeStyle='rgba(140,170,210,.5)';g.lineWidth=2;for(let i=0;i<14;i++){g.beginPath();let x=Math.random()*w,y=0;g.moveTo(x,y);while(y<h){y+=20+Math.random()*30;x+=(Math.random()-.5)*36;g.lineTo(x,y)}g.stroke()}});
  marbleTex.wrapS=marbleTex.wrapT=T.RepeatWrapping;marbleTex.repeat.set(3,3);
@@ -3749,7 +3708,7 @@ function buildRoom(){
  const halo=A(new T.TorusGeometry(2.3,.22,10,40),new T.MeshStandardMaterial({color:0xffd76a,emissive:0xa87a10,emissiveIntensity:.7,metalness:.9,roughness:.25}),0,10.6,0,heaven);halo.rotation.x=PI/2.4;
  const shaft=A(new T.ConeGeometry(5.5,15,24,1,true),glow(new T.MeshBasicMaterial({color:0xbfdcff,transparent:true,opacity:.13,side:2})),0,9,-1,heaven);
  const lh=sprTxt('天国',52,'#eaf6ff');lh.scale.set(5.4,2,1);lh.position.set(0,2.2,3.4);heaven.add(lh);
- /* hell side: rocks + lava pool + horns + flames */
+ /* hell side: rocks + lava pool + horns (no flame particles) */
  const hellG=new T.Group();hellG.position.set(12.5,0,-2);sc.add(hellG);
  const rockM=M(0x2a2226,{roughness:.95,flatShading:true});
  const rock=A(new T.IcosahedronGeometry(3.6,0),rockM,0,1.8,-1,hellG);rock.scale.y=.75;
@@ -3758,12 +3717,11 @@ function buildRoom(){
  const pool=A(new T.CircleGeometry(3.4,28),new T.MeshStandardMaterial({color:0xff5a10,emissive:0xff4400,emissiveIntensity:1.6,roughness:.4}),0,.06,2.6,hellG);pool.rotation.x=-PI/2;
  const hornM=M(0x1a1216,{roughness:.5,metalness:.3});
  [-1,1].forEach(sx=>{const h=A(new T.TorusGeometry(1.7,.34,8,14,PI*.85),hornM,sx*1.9,6.4,-1,hellG);h.rotation.set(.3,0,sx>0?-2.4:2.4+PI*.85)});
- const flames=[];for(let i=0;i<14;i++){const s=new T.Sprite(glow(new T.SpriteMaterial({map:radial('rgba(255,140,40,.95)')})));s.position.set((Math.random()-.5)*7,.8+Math.random()*2,1.4+Math.random()*2.4);s.scale.set(1.6,2.6,1);hellG.add(s);flames.push({s,ph:Math.random()*TAU,sp:.8+Math.random()})}
  const lj=sprTxt('地獄',52,'#ff9a5a');lj.scale.set(5.4,2,1);lj.position.set(0,2.2,3.6);hellG.add(lj);
- /* sparkles over heaven, embers over hell */
- const NP=90,pg=new T.BufferGeometry(),pp=new Float32Array(NP*3);
- for(let i=0;i<NP;i++){const hellSide=i>=NP/2;pp[i*3]=(hellSide?12.5:-12.5)+(Math.random()-.5)*13;pp[i*3+1]=1+Math.random()*11;pp[i*3+2]=(Math.random()-.5)*10}
- pg.setAttribute('position',new T.BufferAttribute(pp,3));sc.add(new T.Points(pg,glow(new T.PointsMaterial({color:0xffd9a0,size:.32,sizeAttenuation:true}))));
+ /* gentle gold sparkles over the whole scene */
+ const NP=80,pg=new T.BufferGeometry(),pp=new Float32Array(NP*3);
+ for(let i=0;i<NP;i++){pp[i*3]=(Math.random()-.5)*36;pp[i*3+1]=1+Math.random()*11;pp[i*3+2]=(Math.random()-.5)*12}
+ pg.setAttribute('position',new T.BufferAttribute(pp,3));sc.add(new T.Points(pg,glow(new T.PointsMaterial({color:0xffd9a0,size:.3,sizeAttenuation:true}))));
  function fit(){const w=host.clientWidth||600,h=host.clientHeight||320;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
  const me={kind:'room',host,dead:false,raf:0,ro:null,dispose:null};
  me.ro=typeof ResizeObserver!='undefined'?new ResizeObserver(fit):null;me.ro&&me.ro.observe(host);fit();
@@ -3774,9 +3732,9 @@ function buildRoom(){
   gem.rotation.y=t*.9;gem.position.y=8+Math.sin(t*1.4)*.35;gemGlow.position.y=gem.position.y;gemGlow.material.opacity=.65+.3*Math.sin(t*2.2);
   halo.rotation.z=t*.4;halo.position.y=10.6+Math.sin(t*1.1)*.3;
   heaven.position.y=Math.sin(t*.8)*.25;hellG.position.y=Math.sin(t*.8+2)*.15;
-  flames.forEach(f=>{const u=(t*f.sp+f.ph)%1;f.s.position.y=.8+u*3.4;f.s.material.opacity=1-u;const sc2=1.6*(1-u*.5);f.s.scale.set(sc2,sc2*1.6,1)});
-  hell.intensity=1.3+Math.sin(t*7.3)*.25+Math.sin(t*13.7)*.15;
-  const q=pg.attributes.position.array;for(let i=0;i<NP;i++){q[i*3+1]+=(i>=NP/2?.03:.012);if(q[i*3+1]>13)q[i*3+1]=1}pg.attributes.position.needsUpdate=true;
+  hell.intensity=1.15+Math.sin(t*2.4)*.15;
+  pool.material.emissiveIntensity=1.5+Math.sin(t*1.8)*.25;
+  const q=pg.attributes.position.array;for(let i=0;i<NP;i++){q[i*3+1]+=.01;if(q[i*3+1]>12.5)q[i*3+1]=1}pg.attributes.position.needsUpdate=true;
   cam.position.set(Math.sin(t*.3)*1.8,7.6+Math.sin(t*.5)*.5,27);cam.lookAt(0,4.6,-3);
   R.render(sc,cam)}
  me.raf=requestAnimationFrame(frame)}
