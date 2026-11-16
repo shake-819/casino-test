@@ -3635,10 +3635,24 @@ return{sync}})();
 .wrap.sv3w #rn{inset:auto;right:8px;top:8px;width:64px;height:64px;font-size:22px;z-index:2}
 .sv3wh{position:absolute;inset:0;border-radius:14px;overflow:hidden;background:#07040c;box-shadow:0 0 0 2px var(--g),0 10px 24px #000a}
 </style>
+<style>
+body.sv3f .sv3{display:block;position:fixed;inset:0;width:100%;height:100%;margin:0;border-radius:0;box-shadow:none;z-index:0}
+body.sv3f .sv3::after{content:'ドラッグで見回す ／ タップで入室';position:absolute;left:0;right:0;bottom:96px;text-align:center;color:#ffe9a0;font:700 12px sans-serif;text-shadow:0 2px 6px #000;pointer-events:none}
+body.sv3f #s2 .table{background:none!important;border:none!important;box-shadow:none!important;padding:0;border-radius:0}
+body.sv3f #s2 .table::before{display:none!important}
+body.sv3f #s2>.hud{position:relative;z-index:3}
+body.sv3f #stage>.grid{display:none!important}
+body.sv3f #stage>.msg{position:relative;z-index:3;margin:2px 0}
+body.sv3f #stage>.svdep{position:relative;z-index:3}
+body.sv3f #stage>.lab{position:fixed;z-index:3;left:0;right:0;bottom:54px;padding:0 14px;font-size:10px;margin:0}
+body.sv3f #stage>.chips{position:fixed;z-index:3;left:0;right:0;bottom:8px;margin:0;justify-content:center}
+body.sv3f #s2::after{content:'';position:fixed;left:0;right:0;bottom:0;height:140px;background:linear-gradient(transparent,#000c);z-index:2;pointer-events:none}
+</style>
 <script>
 /* ===== SV3: SVIP room and SVIP games as Three.js scenes. Game logic is untouched:
-   - SVIPルーム: a heaven & hell diorama banner (clouds + halo vs lava rocks + horns, gate and a floating
-     diamond; no flame particles). The DOM grid below stays fully usable.
+   - SVIPルーム: a heaven & hell diorama (clouds + halo vs lava rocks + horns, gate, floating diamond;
+     no flame particles). The member room is fullscreen (VL3-style): the DOM grid is hidden and each game
+     is a tappable 3D door; drag to look around. The non-member gate screen keeps an inline banner.
    - ブラックホール・クラッシュ: a black hole scene; a light orb orbits closer as the multiplier (read live
      from #svx) grows, is sucked in on crash, bursts gold on cashout.
    - ダイヤモンド・マインズ: a 3D 5x5 tile field mirroring the .svt buttons; clicks forward to the DOM tiles.
@@ -3656,13 +3670,13 @@ const cvs=(w,h,f)=>{const c=document.createElement('canvas');c.width=w;c.height=
 const radial=col=>cvs(128,128,g=>{const r=g.createRadialGradient(64,64,0,64,64,64);r.addColorStop(0,col);r.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=r;g.fillRect(0,0,128,128)});
 const glow=m=>{m.blending=T.AdditiveBlending;m.depthWrite=false;m.transparent=true;return m};
 const sprTxt=(txt,fs,col,w,h)=>new T.Sprite(new T.SpriteMaterial({map:cvs(w||256,h||96,(g,W,H)=>{g.font='900 '+(fs||44)+'px '+JP;g.textAlign='center';g.textBaseline='middle';g.lineWidth=9;g.strokeStyle='#160a04';g.strokeText(txt,W/2,H/2);g.fillStyle=col;g.fillText(txt,W/2,H/2)}),transparent:true,depthTest:false}));
-function dispose(){if(S&&!S.dead)S.dispose();S=null;const s2=document.getElementById('s2');const h=s2&&s2.querySelector('.sv3');if(h){h.style.display='none';h.innerHTML=''}const stg=document.getElementById('stage');if(stg)stg.classList.remove('sv3con','sv3mon');document.querySelectorAll('.sv3cv,.sv3mn').forEach(x=>x.remove());const w=document.querySelector('.wrap.sv3w');if(w)w.classList.remove('sv3w')}
+function dispose(){if(S&&!S.dead)S.dispose();S=null;document.body.classList.remove('sv3f');const s2=document.getElementById('s2');const h=s2&&s2.querySelector('.sv3');if(h){h.style.display='none';h.innerHTML=''}const stg=document.getElementById('stage');if(stg)stg.classList.remove('sv3con','sv3mon');document.querySelectorAll('.sv3cv,.sv3mn').forEach(x=>x.remove());const w=document.querySelector('.wrap.sv3w');if(w)w.classList.remove('sv3w')}
 function sync(){const gt=document.getElementById('gt'),stg=document.getElementById('stage');if(!gt||!stg)return;const title=gt.textContent;
  const mine=title==='SVIPルーム'||title==='ブラックホール・クラッシュ'||title==='ダイヤモンド・マインズ'||title==='プラチナ・ルーレット';
  if(!mine){if(S)dispose();return}
  if(broken)return;
  try{
-  if(title==='SVIPルーム'){if(!(S&&S.kind=='room'&&!S.dead)){if(S)dispose();buildRoom()}}
+  if(title==='SVIPルーム'){const member=!!stg.querySelector('.grid .gc');if(!(S&&S.kind=='room'&&!S.dead&&S.full===member)){if(S)dispose();buildRoom(stg,member)}}
   else if(title==='ブラックホール・クラッシュ'){if(S&&S.kind=='crash'&&!S.dead)S.rehost(stg);else{if(S)dispose();buildCrash(stg)}}
   else if(title==='ダイヤモンド・マインズ'){const g=stg.querySelector('.svg5');if(!g){if(S)dispose()}
    else if(S&&S.kind=='mines'&&!S.dead){S.rehost(stg);S.syncTiles()}else{if(S)dispose();buildMines(stg)}}
@@ -3672,44 +3686,47 @@ function sync(){const gt=document.getElementById('gt'),stg=document.getElementBy
 function baseScene(bg,fogD){const sc=new T.Scene();sc.background=new T.Color(bg);sc.fog=new T.FogExp2(bg,fogD||.012);return sc}
 function mkRenderer(host,cv){const R=new T.WebGLRenderer({canvas:cv,antialias:true});R.setPixelRatio(Math.min(devicePixelRatio||1,1.75));return R}
 function stdDispose(me,R,host,extra){return function(){if(me.dead)return;me.dead=true;cancelAnimationFrame(me.raf);me.ro&&me.ro.disconnect();try{R.dispose();R.forceContextLoss&&R.forceContextLoss()}catch(e){}extra&&extra()}}
-/* ================= SVIP room: heaven & hell diorama ================= */
-function buildRoom(){
- const s2=document.getElementById('s2'),stg=document.getElementById('stage');if(!s2||!stg)return;
+/* ================= SVIP room: heaven & hell diorama, fullscreen (VL3-style) with tappable game doors.
+   Member room (grid present) goes fullscreen: the DOM grid is hidden and each game becomes a 3D door
+   (drag to look around, tap a door to enter). The gate screen (non-members) keeps the inline banner. ================= */
+function buildRoom(stg,member){
+ const s2=document.getElementById('s2');if(!s2||!stg)return;
  let host=s2.querySelector('.sv3');if(!host){host=document.createElement('div');host.className='sv3';s2.insertBefore(host,stg)}
- const cv=document.createElement('canvas');cv.style.cssText='width:100%;height:100%;display:block';host.innerHTML='';host.appendChild(cv);host.style.display='block';
- const R=mkRenderer(host,cv),sc=baseScene(0x0a0618,.01),cam=new T.PerspectiveCamera(46,1,.1,220);
+ const cv=document.createElement('canvas');cv.style.cssText='width:100%;height:100%;display:block;touch-action:none';host.innerHTML='';host.appendChild(cv);host.style.display='block';
+ if(member)document.body.classList.add('sv3f');
+ const R=mkRenderer(host,cv),sc=baseScene(0x0a0618,.01),cam=new T.PerspectiveCamera(46,1,.1,260);
  const M=(c,o)=>new T.MeshStandardMaterial(Object.assign({color:c,roughness:.6,metalness:.15},o||{}));
  const A=(g,m,x,y,z,p)=>{const o=new T.Mesh(g,m);o.position.set(x,y,z);(p||sc).add(o);return o};
  sc.add(new T.AmbientLight(0x8a90c0,.85));
  const dl=new T.DirectionalLight(0xd8ecff,1.1);dl.position.set(-18,24,12);sc.add(dl);
- const gold=new T.PointLight(0xffc060,1.1,60);gold.position.set(0,10,4);sc.add(gold);
- const hell=new T.PointLight(0xff4a1a,1.2,55);hell.position.set(15,4,2);sc.add(hell);
+ const gold=new T.PointLight(0xffc060,1.1,70);gold.position.set(0,10,4);sc.add(gold);
+ const hell=new T.PointLight(0xff4a1a,1.2,60);hell.position.set(15,4,2);sc.add(hell);
  /* split ground: marble (heaven) / lava rock (hell) */
  const marbleTex=cvs(256,256,(g,w,h)=>{g.fillStyle='#dfe9f6';g.fillRect(0,0,w,h);g.strokeStyle='rgba(140,170,210,.5)';g.lineWidth=2;for(let i=0;i<14;i++){g.beginPath();let x=Math.random()*w,y=0;g.moveTo(x,y);while(y<h){y+=20+Math.random()*30;x+=(Math.random()-.5)*36;g.lineTo(x,y)}g.stroke()}});
  marbleTex.wrapS=marbleTex.wrapT=T.RepeatWrapping;marbleTex.repeat.set(3,3);
- const mp=A(new T.PlaneGeometry(34,44),new T.MeshStandardMaterial({map:marbleTex,roughness:.35,metalness:.1}),-17,0,0);mp.rotation.x=-PI/2;
+ const mp=A(new T.PlaneGeometry(38,48),new T.MeshStandardMaterial({map:marbleTex,roughness:.35,metalness:.1}),-19,0,0);mp.rotation.x=-PI/2;
  const lavaTex=cvs(256,256,(g,w,h)=>{g.fillStyle='#180404';g.fillRect(0,0,w,h);for(let i=0;i<26;i++){g.strokeStyle=i%3?'rgba(255,90,20,.85)':'rgba(255,170,40,.95)';g.lineWidth=1+Math.random()*2.4;g.beginPath();let x=Math.random()*w,y=Math.random()*h;g.moveTo(x,y);for(let k=0;k<5;k++){x+=(Math.random()-.5)*70;y+=(Math.random()-.5)*70;g.lineTo(x,y)}g.stroke()}});
  lavaTex.wrapS=lavaTex.wrapT=T.RepeatWrapping;lavaTex.repeat.set(3,3);
- const lp=A(new T.PlaneGeometry(34,44),new T.MeshStandardMaterial({map:lavaTex,emissive:0xff4400,emissiveMap:lavaTex,emissiveIntensity:.55,roughness:.9}),17,0,0);lp.rotation.x=-PI/2;
- const seam=A(new T.BoxGeometry(.5,.3,44),M(0xd4af37,{metalness:.9,roughness:.3}),0,.12,0);
+ const lp=A(new T.PlaneGeometry(38,48),new T.MeshStandardMaterial({map:lavaTex,emissive:0xff4400,emissiveMap:lavaTex,emissiveIntensity:.55,roughness:.9}),19,0,0);lp.rotation.x=-PI/2;
+ const seam=A(new T.BoxGeometry(.5,.3,48),M(0xd4af37,{metalness:.9,roughness:.3}),0,.12,0);
  /* the gate */
- const pilL=A(new T.CylinderGeometry(1.1,1.3,11,18),M(0xf2f5fa,{roughness:.3}),-3.4,5.5,-7);
- const pilR=A(new T.CylinderGeometry(1.1,1.3,11,18),M(0x17171e,{roughness:.45,metalness:.3}),3.4,5.5,-7);
- A(new T.SphereGeometry(1.35,16,12),M(0xd4af37,{metalness:.9,roughness:.25}),-3.4,11.6,-7);
- A(new T.SphereGeometry(1.35,16,12),M(0x8a0f08,{emissive:0x5a0800,roughness:.4}),3.4,11.6,-7);
- const beam=A(new T.BoxGeometry(10.6,1.1,1.4),M(0xd4af37,{metalness:.85,roughness:.3}),0,10.6,-7);
- const ttl=sprTxt('💎 SVIP ROOM',54,'#ffe37a',640,128);ttl.scale.set(13,2.6,1);ttl.position.set(0,13.4,-7);sc.add(ttl);
- const gem=A(new T.OctahedronGeometry(1.6),new T.MeshStandardMaterial({color:0xbfefff,emissive:0x2a9fd8,emissiveIntensity:.8,roughness:.1,metalness:.2,transparent:true,opacity:.92}),0,8,-7);
- const gemGlow=new T.Sprite(glow(new T.SpriteMaterial({map:radial('rgba(140,220,255,.85)')})));gemGlow.scale.set(9,9,1);gemGlow.position.copy(gem.position);sc.add(gemGlow);
+ A(new T.CylinderGeometry(1.2,1.4,12,18),M(0xf2f5fa,{roughness:.3}),-3.7,6,-11);
+ A(new T.CylinderGeometry(1.2,1.4,12,18),M(0x17171e,{roughness:.45,metalness:.3}),3.7,6,-11);
+ A(new T.SphereGeometry(1.45,16,12),M(0xd4af37,{metalness:.9,roughness:.25}),-3.7,12.6,-11);
+ A(new T.SphereGeometry(1.45,16,12),M(0x8a0f08,{emissive:0x5a0800,roughness:.4}),3.7,12.6,-11);
+ A(new T.BoxGeometry(11.4,1.2,1.5),M(0xd4af37,{metalness:.85,roughness:.3}),0,11.5,-11);
+ const ttl=sprTxt('💎 SVIP ROOM',54,'#ffe37a',640,128);ttl.scale.set(14,2.8,1);ttl.position.set(0,14.6,-11);sc.add(ttl);
+ const gem=A(new T.OctahedronGeometry(1.7),new T.MeshStandardMaterial({color:0xbfefff,emissive:0x2a9fd8,emissiveIntensity:.8,roughness:.1,metalness:.2,transparent:true,opacity:.92}),0,8.8,-11);
+ const gemGlow=new T.Sprite(glow(new T.SpriteMaterial({map:radial('rgba(140,220,255,.85)')})));gemGlow.scale.set(9.5,9.5,1);gemGlow.position.copy(gem.position);sc.add(gemGlow);
  /* heaven side: clouds + halo + light shaft */
- const heaven=new T.Group();heaven.position.set(-12.5,0,-2);sc.add(heaven);
+ const heaven=new T.Group();heaven.position.set(-14,0,-6);sc.add(heaven);
  const cloudM=M(0xffffff,{roughness:.9,emissive:0x8899bb,emissiveIntensity:.25});
  [[0,5.4,0,3.4],[2.8,4.8,.8,2.6],[-2.9,4.9,-.6,2.7],[1.2,6.3,-1,2.2],[-1.4,6.1,1,2],[-4.6,4.2,.6,1.9],[4.7,4.1,-.4,1.8]].forEach(([x,y,z,s])=>{const o=A(new T.SphereGeometry(s,18,14),cloudM,x,y,z,heaven);o.scale.y=.55});
  const halo=A(new T.TorusGeometry(2.3,.22,10,40),new T.MeshStandardMaterial({color:0xffd76a,emissive:0xa87a10,emissiveIntensity:.7,metalness:.9,roughness:.25}),0,10.6,0,heaven);halo.rotation.x=PI/2.4;
  const shaft=A(new T.ConeGeometry(5.5,15,24,1,true),glow(new T.MeshBasicMaterial({color:0xbfdcff,transparent:true,opacity:.13,side:2})),0,9,-1,heaven);
- const lh=sprTxt('天国',52,'#eaf6ff');lh.scale.set(5.4,2,1);lh.position.set(0,2.2,3.4);heaven.add(lh);
+ const lh=sprTxt('天国',52,'#eaf6ff');lh.scale.set(5.4,2,1);lh.position.set(0,1.6,3.4);heaven.add(lh);
  /* hell side: rocks + lava pool + horns (no flame particles) */
- const hellG=new T.Group();hellG.position.set(12.5,0,-2);sc.add(hellG);
+ const hellG=new T.Group();hellG.position.set(14,0,-6);sc.add(hellG);
  const rockM=M(0x2a2226,{roughness:.95,flatShading:true});
  const rock=A(new T.IcosahedronGeometry(3.6,0),rockM,0,1.8,-1,hellG);rock.scale.y=.75;
  A(new T.IcosahedronGeometry(2,0),rockM,-3.6,1,-2.4,hellG).scale.y=.7;
@@ -3717,25 +3734,54 @@ function buildRoom(){
  const pool=A(new T.CircleGeometry(3.4,28),new T.MeshStandardMaterial({color:0xff5a10,emissive:0xff4400,emissiveIntensity:1.6,roughness:.4}),0,.06,2.6,hellG);pool.rotation.x=-PI/2;
  const hornM=M(0x1a1216,{roughness:.5,metalness:.3});
  [-1,1].forEach(sx=>{const h=A(new T.TorusGeometry(1.7,.34,8,14,PI*.85),hornM,sx*1.9,6.4,-1,hellG);h.rotation.set(.3,0,sx>0?-2.4:2.4+PI*.85)});
- const lj=sprTxt('地獄',52,'#ff9a5a');lj.scale.set(5.4,2,1);lj.position.set(0,2.2,3.6);hellG.add(lj);
- /* gentle gold sparkles over the whole scene */
+ const lj=sprTxt('地獄',52,'#ff9a5a');lj.scale.set(5.4,2,1);lj.position.set(0,1.6,3.6);hellG.add(lj);
+ /* game doors (member room only) */
+ const doors=[];
+ if(member){
+  const ACTS=[['🕳️','ブラックホール・クラッシュ',()=>svcPre()],['😇','ダイヤモンド・マインズ',()=>svmPre()],['🧗','堕天のラダー',()=>SVL.pre()],['🎰','ゴールデン・パチンコ',()=>SVP.pre()],['🎡','プラチナ・ルーレット',()=>svrPre()],['🍣','がっぽり寿司',()=>SVG.pre()],['🔫','SVIPロシアン',()=>svkPre()],['🌐','SVIPオンライン',()=>svoLobby()]];
+  const panelTex=heavenSide=>cvs(216,312,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);if(heavenSide){gr.addColorStop(0,'#33507e');gr.addColorStop(1,'#131f3d')}else{gr.addColorStop(0,'#57150c');gr.addColorStop(1,'#180404')}g.fillStyle=gr;g.fillRect(0,0,w,h);g.strokeStyle=heavenSide?'#ffe9a0':'#ff7a3a';g.lineWidth=10;g.strokeRect(8,8,w-16,h-16);g.strokeStyle='rgba(255,255,255,.25)';g.lineWidth=3;g.strokeRect(24,24,w-48,h-48)});
+  const texH=panelTex(true),texX=panelTex(false);
+  ACTS.forEach(([icon,name,fn],i)=>{
+   const grp=new T.Group();const x=(i-3.5)*4.7,z=-1.5-Math.abs(i-3.5)*1.05;
+   grp.position.set(x,2.9,z);grp.rotation.y=-(i-3.5)*.085;sc.add(grp);
+   const hs=i<4;
+   const panel=new T.Mesh(JX.rbox(1,.06),new T.MeshStandardMaterial({map:hs?texH:texX,roughness:.5,metalness:.25}));
+   panel.scale.set(3.7,5.4,.45);panel.userData.act=fn;grp.add(panel);
+   const orb=A(new T.SphereGeometry(.34,12,10),new T.MeshStandardMaterial({color:hs?0xffe9a0:0xff8a4a,emissive:hs?0xa87a10:0xa83a08,emissiveIntensity:1}),0,3.1,.35,grp);
+   const ic=sprTxt(icon,64,'#ffffff',128,128);ic.scale.set(1.9,1.9,1);ic.position.set(0,1.15,.4);grp.add(ic);
+   const nm=sprTxt(name,40,'#ffffff',560,104);nm.scale.set(5.5,1.02,1);nm.position.set(0,-1.55,.4);grp.add(nm);
+   doors.push({grp,panel,orb,ph:i*.7})});
+ }
+ /* gentle gold sparkles */
  const NP=80,pg=new T.BufferGeometry(),pp=new Float32Array(NP*3);
- for(let i=0;i<NP;i++){pp[i*3]=(Math.random()-.5)*36;pp[i*3+1]=1+Math.random()*11;pp[i*3+2]=(Math.random()-.5)*12}
+ for(let i=0;i<NP;i++){pp[i*3]=(Math.random()-.5)*40;pp[i*3+1]=1+Math.random()*12;pp[i*3+2]=-10+Math.random()*14}
  pg.setAttribute('position',new T.BufferAttribute(pp,3));sc.add(new T.Points(pg,glow(new T.PointsMaterial({color:0xffd9a0,size:.3,sizeAttenuation:true}))));
- function fit(){const w=host.clientWidth||600,h=host.clientHeight||320;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
- const me={kind:'room',host,dead:false,raf:0,ro:null,dispose:null};
+ let D=30;
+ function fit(){const w=host.clientWidth||600,h=host.clientHeight||320;R.setSize(w,h,false);cam.aspect=w/h;const th=Math.tan(cam.fov*PI/360);D=Math.max(23,20/(th*cam.aspect));cam.updateProjectionMatrix()}
+ const me={kind:'room',host,dead:false,raf:0,ro:null,dispose:null,full:!!member};
  me.ro=typeof ResizeObserver!='undefined'?new ResizeObserver(fit):null;me.ro&&me.ro.observe(host);fit();
- me.dispose=stdDispose(me,R,host,()=>{host.style.display='none';host.innerHTML=''});S=me;
+ me.dispose=stdDispose(me,R,host,()=>{host.style.display='none';host.innerHTML='';document.body.classList.remove('sv3f')});S=me;
+ /* drag to look around, tap a door to enter */
+ let yaw=0,pitch=0,yawT=0,pitchT=0,drag=null;
+ const ray=new T.Raycaster(),mv=new T.Vector2();
+ cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,t:performance.now(),moved:0}});
+ cv.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.moved=Math.max(drag.moved,Math.abs(dx)+Math.abs(dy));yawT=clamp(-dx*.004,-.6,.6);pitchT=clamp(dy*.002,-.12,.2)});
+ cv.addEventListener('pointerup',e=>{if(!drag)return;const wasTap=drag.moved<8&&performance.now()-drag.t<450;drag=null;yawT=0;pitchT=0;
+  if(!wasTap||!doors.length)return;const r=cv.getBoundingClientRect();mv.set((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height)*2+1);ray.setFromCamera(mv,cam);
+  const hs=ray.intersectObjects(doors.map(d=>d.panel),false);if(hs.length&&hs[0].object.userData.act){try{hs[0].object.userData.act()}catch(err){console.warn('SV3 door',err)}}});
+ cv.addEventListener('pointercancel',()=>{drag=null;yawT=0;pitchT=0});
  let t=0,last=performance.now();
  function frame(ts){me.raf=requestAnimationFrame(frame);if(me.dead)return;if(!cv.isConnected||document.hidden||!host.offsetParent){last=ts;return}
   const dt=Math.min(.05,(ts-last)/1000||0);last=ts;t+=dt;
-  gem.rotation.y=t*.9;gem.position.y=8+Math.sin(t*1.4)*.35;gemGlow.position.y=gem.position.y;gemGlow.material.opacity=.65+.3*Math.sin(t*2.2);
+  yaw+=(yawT-yaw)*Math.min(1,dt*8);pitch+=(pitchT-pitch)*Math.min(1,dt*8);
+  gem.rotation.y=t*.9;gem.position.y=8.8+Math.sin(t*1.4)*.35;gemGlow.position.y=gem.position.y;gemGlow.material.opacity=.65+.3*Math.sin(t*2.2);
   halo.rotation.z=t*.4;halo.position.y=10.6+Math.sin(t*1.1)*.3;
   heaven.position.y=Math.sin(t*.8)*.25;hellG.position.y=Math.sin(t*.8+2)*.15;
   hell.intensity=1.15+Math.sin(t*2.4)*.15;
   pool.material.emissiveIntensity=1.5+Math.sin(t*1.8)*.25;
-  const q=pg.attributes.position.array;for(let i=0;i<NP;i++){q[i*3+1]+=.01;if(q[i*3+1]>12.5)q[i*3+1]=1}pg.attributes.position.needsUpdate=true;
-  cam.position.set(Math.sin(t*.3)*1.8,7.6+Math.sin(t*.5)*.5,27);cam.lookAt(0,4.6,-3);
+  doors.forEach(d=>{d.grp.position.y=2.9+Math.sin(t*1.5+d.ph)*.16;d.orb.material.emissiveIntensity=1+Math.sin(t*3+d.ph)*.45});
+  const q=pg.attributes.position.array;for(let i=0;i<NP;i++){q[i*3+1]+=.01;if(q[i*3+1]>13)q[i*3+1]=1}pg.attributes.position.needsUpdate=true;
+  cam.position.set(yaw*9,7.8+pitch*7,D);cam.lookAt(yaw*5,4.4,-4);
   R.render(sc,cam)}
  me.raf=requestAnimationFrame(frame)}
 /* ================= black hole crash ================= */
